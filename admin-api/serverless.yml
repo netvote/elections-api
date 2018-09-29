@@ -18,6 +18,10 @@ provider:
       Resource: "arn:aws:dynamodb:us-east-1:891335278704:table/elections"
     - Effect: Allow
       Action:
+        - dynamodb:Query
+      Resource: "arn:aws:dynamodb:us-east-1:891335278704:table/votes"
+    - Effect: Allow
+      Action:
         - lambda:InvokeFunction
       Resource: "arn:aws:lambda:us-east-1:891335278704:function:election-*"
 

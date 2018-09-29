@@ -74,7 +74,7 @@ const setStatus = async (electionId, status) => {
 
 const hasPendingVotes = async (electionId) => {
     let tx = await getTransactions(electionId, "pending");
-    if(tx.statusCounts["pending"] > 0){
+    if(tx.stats["pending"] > 0){
         return true;
     } else {
         return false;

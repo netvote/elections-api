@@ -39,7 +39,7 @@ const closeElection = async (el, user, force) => {
     return utils.error(409, `cannot close until ${new Date(el.closeAfter)}`)
   }
 
-  let hasPendingVotes = await electionData.hasPendingVotes(electionId);
+  let hasPendingVotes = await electionData.hasPendingVotes(el.electionId);
   if(!force && hasPendingVotes) {
     return utils.error(409, `There are still pending votes.  Inspect before closing.`);
   }
@@ -48,6 +48,9 @@ const closeElection = async (el, user, force) => {
     electionId: el.electionId
   }
   let jobId = await async.startJob("election-close", payload, user);
+
+  await async.startJob("election-publish-authids", payload, user);
+
   return utils.sendJobId(jobId)
 }
 
