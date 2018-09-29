@@ -40,9 +40,14 @@ const error = (code, message) => {
       };
 }
 
+const sendJobId = (jobId) => {
+    return success({status: "pending", jobId: jobId})
+}
+
 module.exports = {
     getUser: getUser,
     validate: validate,
     error: error,
-    success: success
+    success: success,
+    sendJobId: sendJobId
 }

@@ -135,6 +135,10 @@ module.exports = {
     checkReady();
     return await netvotePost("/admin/election", obj)
   },
+  SetElectionStatus: async(id, obj) => {
+    checkReady();
+    return await netvotePost(`/admin/election/${id}/status`, obj)
+  },
   AdminGetJob: async(jobId) => {
     checkReady();
     return await netvoteGet(`/admin/job/${jobId}`)
