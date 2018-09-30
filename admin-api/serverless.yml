@@ -9,6 +9,10 @@ provider:
     - Effect: Allow
       Action:
         - dynamodb:PutItem
+      Resource: "arn:aws:dynamodb:us-east-1:891335278704:table/voterKeys"
+    - Effect: Allow
+      Action:
+        - dynamodb:PutItem
         - dynamodb:GetItem
       Resource: "arn:aws:dynamodb:us-east-1:891335278704:table/asyncJobs"
     - Effect: Allow
@@ -42,6 +46,17 @@ functions:
     events:
       - http:
           path: admin/election/{id}/status
+          method: post
+          cors: true
+          authorizer:
+            name: authorizer
+            arn: arn:aws:cognito-idp:us-east-1:891335278704:userpool/us-east-1_XGFVRW86R
+
+  generateVoterKeys:
+    handler: auth-keys.generate
+    events:
+      - http:
+          path: admin/election/{id}/keys/generate
           method: post
           cors: true
           authorizer:

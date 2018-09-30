@@ -81,9 +81,20 @@ const hasPendingVotes = async (electionId) => {
     }
 }
 
+const saveVoterKey = async(keyObj) => {
+    keyObj.txTimestamp = new Date().getTime();
+
+    let params = {
+        TableName: "voterKeys",
+        Item: keyObj
+    }
+    await docClient.put(params).promise();
+}
+
 module.exports = {
     getElection: getElection,
     setStatus: setStatus,
+    saveVoterKey: saveVoterKey,
     hasPendingVotes: hasPendingVotes,
     getTransactions: getTransactions
 }

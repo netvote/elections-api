@@ -73,8 +73,6 @@ describe(`End to End Election`, function() {
             status: "stopped"
         });
         assert.equal(job.status, "complete", "status should be complete")
-        let el = await nv.GetElection(electionId);
-
         await assertElectionState(electionId, "stopped")
     })
 
@@ -86,7 +84,11 @@ describe(`End to End Election`, function() {
         await assertElectionState(electionId, "voting")
     })
 
-    it.skip('should generate a key', async ()=> {
+    it('should generate a key', async ()=> {
+        let res = await nv.GenerateVoterKeys(electionId, {count: 5});
+        console.log(res);
+        assert.equal(res.keys != null, true, "should have keys populated")
+        assert.equal(res.keys.length, 5, "should have generated 5 keys");
         //TODO: implement
     })
 

@@ -62,13 +62,13 @@ module.exports = {
     checkReady();
     return await netvotePost("/admin/election", obj)
   },
+  GenerateVoterKeys: async(id, obj) => {
+    checkReady();
+    return await netvotePost(`/admin/election/${id}/keys/generate`, obj)
+  },
   SetElectionStatus: async(id, obj) => {
     checkReady();
     return await netvotePost(`/admin/election/${id}/status`, obj)
-  },
-  GetElection: async(electionId) => {
-    checkReady();
-    return await netvoteGet(`/public/election/${electionId}`)
   },
   AdminGetJob: async(jobId) => {
     checkReady();
