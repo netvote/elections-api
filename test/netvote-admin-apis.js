@@ -32,7 +32,6 @@ const authentify = async (headers) => {
   return reqHeaders;
 }
 
-
 const netvoteGet = async (path, headers) => {
   let reqHeaders = await authentify(headers);
   return nvReq.netvoteGet(BASE_URL.hostname, `${BASE_URL.pathname}${path}`, reqHeaders);
@@ -62,9 +61,9 @@ module.exports = {
     checkReady();
     return await netvotePost("/admin/election", obj)
   },
-  GenerateVoterKeys: async(id, obj) => {
+  AddVoterKeys: async(id, obj) => {
     checkReady();
-    return await netvotePost(`/admin/election/${id}/keys/generate`, obj)
+    return await netvotePost(`/admin/election/${id}/keys`, obj)
   },
   SetElectionStatus: async(id, obj) => {
     checkReady();

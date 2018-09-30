@@ -52,11 +52,11 @@ functions:
             name: authorizer
             arn: arn:aws:cognito-idp:us-east-1:891335278704:userpool/us-east-1_XGFVRW86R
 
-  generateVoterKeys:
-    handler: auth-keys.generate
+  addVoterKeys:
+    handler: auth-keys.add
     events:
       - http:
-          path: admin/election/{id}/keys/generate
+          path: admin/election/{id}/keys
           method: post
           cors: true
           authorizer:

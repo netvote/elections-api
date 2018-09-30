@@ -19,6 +19,7 @@ const assertElectionState = async (electionId, state) => {
 describe(`End to End Election`, function() {
 
     let electionId;
+    let voterKeys;
 
     it('should create election', async () => {
         let job = await nv.CreateElection({
@@ -84,12 +85,16 @@ describe(`End to End Election`, function() {
         await assertElectionState(electionId, "voting")
     })
 
-    it('should generate a key', async ()=> {
-        let res = await nv.GenerateVoterKeys(electionId, {count: 5});
-        console.log(res);
+    it('should generate keys', async ()=> {
+        let res = await nv.AddVoterKeys(electionId, {generate: 5});
         assert.equal(res.keys != null, true, "should have keys populated")
         assert.equal(res.keys.length, 5, "should have generated 5 keys");
-        //TODO: implement
+        voterKeys = res.keys;
+    })
+
+    it('should add a key', async ()=> {
+        let res = await nv.AddVoterKeys(electionId, {keys: ["test1","test2","test3"]});
+        assert.equal(res.count, 3, "should have a count of 3")
     })
 
     it.skip('should get an auth token', async ()=> {
