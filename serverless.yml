@@ -44,6 +44,18 @@ functions:
             name: authorizer
             arn: arn:aws:cognito-idp:us-east-1:891335278704:userpool/us-east-1_XGFVRW86R
 
+  setElectionPublicJwt:
+    handler: admin/election-set-jwt.set
+    role: adminApiRole
+    events:
+      - http:
+          path: admin/election/{id}/jwt
+          method: post
+          cors: true
+          authorizer:
+            name: authorizer
+            arn: arn:aws:cognito-idp:us-east-1:891335278704:userpool/us-east-1_XGFVRW86R
+
   addVoterKeys:
     handler: admin/auth-keys.add
     role: adminApiRole

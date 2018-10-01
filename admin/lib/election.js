@@ -81,6 +81,22 @@ const hasPendingVotes = async (electionId) => {
     }
 }
 
+const savePublicJwtKey = async (electionId, key) => {
+    let obj = {
+        electionId: electionId,
+        keyType: "jwt-public",
+        value: key,
+        encrypted: false,
+        txTimestamp: new Date().getTime()
+    }
+
+    let params = {
+        TableName: "electionKeys",
+        Item: obj
+    }
+    await docClient.put(params).promise();
+}
+
 const saveVoterKey = async(keyObj) => {
     keyObj.txTimestamp = new Date().getTime();
 
@@ -92,6 +108,7 @@ const saveVoterKey = async(keyObj) => {
 }
 
 module.exports = {
+    savePublicJwtKey: savePublicJwtKey,
     getElection: getElection,
     setStatus: setStatus,
     saveVoterKey: saveVoterKey,
