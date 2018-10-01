@@ -17,6 +17,7 @@ custom:
 provider:
   name: aws
   runtime: nodejs8.10
+  stage: ${opt:stage, 'dev'}
 
 functions:
   createElection:
@@ -82,7 +83,7 @@ resources:
       Type: AWS::IAM::Role
       Properties:
         Path: /api/admin/
-        RoleName: AdminApiRole
+        RoleName: AdminApiRole_${self:provider.stage}
         AssumeRolePolicyDocument:
           Version: '2012-10-17'
           Statement:
@@ -143,7 +144,7 @@ resources:
       Type: AWS::IAM::Role
       Properties:
         Path: /api/public/
-        RoleName: PublicApiRole
+        RoleName: PublicApiRole_${self:provider.stage}
         AssumeRolePolicyDocument:
           Version: '2012-10-17'
           Statement:
