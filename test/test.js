@@ -27,6 +27,7 @@ describe(`End to End Election`, function() {
             continuousReveal: false,
             metadataLocation: "QmZaKMumAXXLkHPBV1ZdAVsF4XCUYz1Jp5PY3oEsLrKoy6",
             allowUpdates: true,
+            netvoteKeyAuth: true,
             network: "netvote"
         });
 
@@ -48,6 +49,18 @@ describe(`End to End Election`, function() {
         electionId = finished.txResult.electionId;
         console.log(`electionId: ${electionId}`)
         await assertElectionState(electionId, "building")
+    })
+
+    it('should generate keys', async ()=> {
+        let res = await nv.AddVoterKeys(electionId, {generate: 5});
+        assert.equal(res.keys != null, true, "should have keys populated")
+        assert.equal(res.keys.length, 5, "should have generated 5 keys");
+        voterKeys = res.keys;
+    })
+
+    it('should add a key', async ()=> {
+        let res = await nv.AddVoterKeys(electionId, {keys: ["test1","test2","test3"]});
+        assert.equal(res.count, 3, "should have a count of 3")
     })
 
     it('should activate election', async () => {
@@ -83,18 +96,6 @@ describe(`End to End Election`, function() {
         });
         assert.equal(job.status, "complete", "status should be complete")
         await assertElectionState(electionId, "voting")
-    })
-
-    it('should generate keys', async ()=> {
-        let res = await nv.AddVoterKeys(electionId, {generate: 5});
-        assert.equal(res.keys != null, true, "should have keys populated")
-        assert.equal(res.keys.length, 5, "should have generated 5 keys");
-        voterKeys = res.keys;
-    })
-
-    it('should add a key', async ()=> {
-        let res = await nv.AddVoterKeys(electionId, {keys: ["test1","test2","test3"]});
-        assert.equal(res.count, 3, "should have a count of 3")
     })
 
     it.skip('should get an auth token', async ()=> {

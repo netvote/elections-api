@@ -37,6 +37,10 @@ const storeKeys = async (event, params) => {
         return utils.error(404, "not found")
     }
 
+    if (!el.netvoteKeyAuth){
+        return utils.error(403, "election does not allow keys")
+    }
+
     let saves = []
     for (let i = 0; i < keys.length; i++) {
         saves.push(electionData.saveVoterKey({
@@ -62,6 +66,10 @@ const generateKeys = async (event, params) => {
 
     if (el == null) {
         return utils.error(404, "not found")
+    }
+
+    if (!el.netvoteKeyAuth){
+        return utils.error(403, "election does not allow keys")
     }
 
     let keys = [];
