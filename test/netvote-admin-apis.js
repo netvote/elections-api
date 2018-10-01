@@ -34,12 +34,14 @@ const authentify = async (headers) => {
 
 const netvoteGet = async (path, headers) => {
   let reqHeaders = await authentify(headers);
-  return nvReq.netvoteGet(BASE_URL.hostname, `${BASE_URL.pathname}${path}`, reqHeaders);
+  let apiPath = BASE_URL.pathname == "/" ? path : `${BASE_URL.pathname}${path}`
+  return nvReq.netvoteGet(BASE_URL.hostname, apiPath, reqHeaders);
 };
 
 const netvotePost = async (path, postObj, headers) => {
   let reqHeaders = await authentify(headers);
-  return nvReq.netvotePost(BASE_URL.hostname, `${BASE_URL.pathname}${path}`, postObj, reqHeaders);
+  let apiPath = BASE_URL.pathname == "/" ? path : `${BASE_URL.pathname}${path}`
+  return nvReq.netvotePost(BASE_URL.hostname, apiPath, postObj, reqHeaders);
 };
 
 const snooze = ms => new Promise(resolve => setTimeout(resolve, ms)); 

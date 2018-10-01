@@ -5,11 +5,13 @@ let BASE_URL;
 let ready=false;
 
 const netvoteGet = (path, headers) => {
-  return nvReq.netvoteGet(BASE_URL.hostname, `${BASE_URL.pathname}${path}`, headers);
+  let apiPath = BASE_URL.pathname == "/" ? path : `${BASE_URL.pathname}${path}`
+  return nvReq.netvoteGet(BASE_URL.hostname, apiPath, headers);
 };
 
 const netvotePost = (path, postObj, headers) => {
-  return nvReq.netvotePost(BASE_URL.hostname, `${BASE_URL.pathname}${path}`, postObj, headers);
+  let apiPath = BASE_URL.pathname == "/" ? path : `${BASE_URL.pathname}${path}`
+  return nvReq.netvotePost(BASE_URL.hostname, apiPath, postObj, headers);
 };
 
 const snooze = ms => new Promise(resolve => setTimeout(resolve, ms)); 

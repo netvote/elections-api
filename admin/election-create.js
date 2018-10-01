@@ -9,6 +9,7 @@ const createElectionSchema = Joi.object().keys({
   continuousReveal: Joi.boolean().default(false),
   metadataLocation: Joi.string().required(),
   requireProof: Joi.boolean().default(true),
+  netvoteKeyAuth: Joi.boolean().default(false),
   allowUpdates: Joi.boolean().default(false),
   closeAfter: Joi.date().default(new Date().getTime()),
   network: Joi.string().only("netvote", "ropsten", "mainnet").required()
@@ -29,6 +30,7 @@ module.exports.create = async (event, context) => {
           isPublic: params.continuousReveal,
           requireProof: params.requireProof,
           closeAfter: params.closeAfter,
+          netvoteKeyAuth: params.netvoteKeyAuth,
           metadataLocation: params.metadataLocation,
           autoActivate: params.autoActivate,
           isDemo: false, 

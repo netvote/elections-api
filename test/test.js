@@ -3,12 +3,12 @@ const nv = require("./netvote-admin-apis");
 nv.Init({
     id: process.env.NETVOTE_DEV_API_ID,
     secret: process.env.NETVOTE_DEV_API_SECRET,
-    baseUrl: "https://mxid9cufe1.execute-api.us-east-1.amazonaws.com/dev"
+    baseUrl: "https://xbg2p0sfld.execute-api.us-east-1.amazonaws.com/dev"
 })
 
 const publicNv = require("./netvote-public-apis");
 publicNv.Init({
-    baseUrl: "https://kdcw0hueb7.execute-api.us-east-1.amazonaws.com/dev"
+    baseUrl: "https://xbg2p0sfld.execute-api.us-east-1.amazonaws.com/dev"
 })
 
 const assertElectionState = async (electionId, state) => {
