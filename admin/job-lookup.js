@@ -1,6 +1,6 @@
 'use strict';
 
-const utils = require("./lib/utils")
+const utils = require("../lib/utils")
 const async = require("./lib/async")
 
 module.exports.lookup = async (event, context) => {

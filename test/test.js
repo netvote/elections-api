@@ -98,8 +98,9 @@ describe(`End to End Election`, function() {
         await assertElectionState(electionId, "voting")
     })
 
-    it.skip('should get an auth token', async ()=> {
-        //TODO: implement
+    it('should get an auth token', async ()=> {
+        let tok = await publicNv.GetJwtToken(electionId, voterKeys[0])
+        assert.equal(tok.token != null, true, "should have a token")
     })
 
     it.skip('should cast a vote', async ()=> {

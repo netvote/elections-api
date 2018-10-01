@@ -1,6 +1,6 @@
 'use strict';
 
-const utils = require("./lib/utils")
+const utils = require("../lib/utils")
 const electionData = require("./lib/election")
 const uuid = require("uuid/v4")
 const Joi = require('joi');
@@ -9,10 +9,6 @@ const addKeysSchema = Joi.object().keys({
     generate: Joi.number().greater(0).less(1000),
     keys: Joi.array().when('generate', { is: '0', then: Joi.array().min(1).items(Joi.string().required()) })
 }).without("generate", "keys")
-
-const generateKeysSchema = Joi.object().keys({
-    count: Joi.number().less(1000).default(1)
-})
 
 module.exports.add = async (event, context) => {
     try {

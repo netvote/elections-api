@@ -1,7 +1,7 @@
 'use strict';
 
-const utils = require("./lib/utils")
-const election = require("./lib/election")
+const utils = require("../lib/utils")
+const election = require("../lib/election")
 
 module.exports.get = async (event, context) => {
 

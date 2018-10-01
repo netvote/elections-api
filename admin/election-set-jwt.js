@@ -1,6 +1,6 @@
 'use strict';
 
-const utils = require("./lib/utils")
+const utils = require("../lib/utils")
 const electionData = require("./lib/election")
 const Joi = require('joi');
 
