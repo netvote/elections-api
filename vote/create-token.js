@@ -30,12 +30,12 @@ module.exports.create = async (event, context) => {
         return utils.error(404, "election not found");
     }
 
-    if(el.electionStatus !== "voting"){
-        return utils.error(409, "election is not currently in 'voting' state")
-    }
-
     if(!el.netvoteKeyAuth){
         return utils.error(400, "election is not using Netvote key authentication, only signed JWTs")
+    }
+
+    if(el.electionStatus !== "voting"){
+        return utils.error(409, "election is not currently in 'voting' state")
     }
 
     let authorized = await auth.authorizeKey(electionId, token)

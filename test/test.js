@@ -12,8 +12,15 @@ publicNv.Init({
 })
 
 const assertElectionState = async (electionId, state) => {
+    await assertElectionValues(electionId, {electionStatus: state})
+}
+
+const assertElectionValues = async (electionId, keyVals) => {
     let el = await publicNv.GetElection(electionId);
-    assert.equal(el.electionStatus, state, `should be in ${state} state, but was ${el.electionStatus}`);
+    Object.keys(keyVals).forEach((name) => {
+        let expected = keyVals[name];
+        assert.equal(el[name], expected, `expected ${name} == ${expected}, but was ${el[name]}`);
+    })
 }
 
 describe(`End to End Election`, function() {
@@ -127,7 +134,12 @@ describe(`End to End Election`, function() {
         let finished = await nv.AdminPollJob(job.jobId, 60000);
 
         assert.equal(finished.txStatus, "complete", "should be in complete state")
-        await assertElectionState(electionId, "closed")
+
+        await assertElectionValues(electionId, {electionStatus: "closed", resultsAvailable: true})
+    })
+
+    it.skip('should tally correctly', async ()=> {
+        //TODO: implement
     })
 
 })
