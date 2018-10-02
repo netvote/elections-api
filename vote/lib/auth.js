@@ -14,7 +14,6 @@ const sha256Hash = (str) => {
 }
 
 const kmsDecrypt = async (ctx, encryptedString) => {
-    console.log(ctx);
     const cipherText = Buffer.from(encryptedString, "base64");
     const params = { EncryptionContext:ctx, CiphertextBlob: cipherText };
     const result = await kmsClient.decrypt(params).promise();
@@ -22,8 +21,6 @@ const kmsDecrypt = async (ctx, encryptedString) => {
 }
 
 const getElectionKey = async (electionId, keyType) => {
-    console.log(electionId);
-    console.log(keyType);
     let params = {
         TableName: TABLE_ELECTION_KEYS,
         Key:{
@@ -33,7 +30,6 @@ const getElectionKey = async (electionId, keyType) => {
     };
     let data = await docClient.get(params).promise();
     let encrypted = data.Item.value;
-    console.log("encrypted="+encrypted);
     return await kmsDecrypt({"id": electionId,"type": keyType}, encrypted)
 }
 

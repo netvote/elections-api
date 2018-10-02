@@ -46,8 +46,9 @@ module.exports.create = async (event, context) => {
     let jwt = await auth.tokenToJwt(electionId, token)
     await auth.recordAuthId(electionId, token);
 
+    console.log({electionId: electionId, message:"authorized voter"});
     return utils.success({ token: jwt })
-
+    
   } catch (e) {
     console.error(e);
     return utils.error(400, e.message)
