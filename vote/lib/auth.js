@@ -57,6 +57,17 @@ const anonymize = async (electionId, token) => {
     return toHmac(`${electionId}:${token}`, secret)
 }
 
+const recordAuthId = async (electionId, token) => {
+    let authId = sha256Hash(token);
+    let params = {
+        TableName: "authIds",
+        Item: {
+            "electionId": electionId,
+            "authId": authId
+        }
+    }
+    await docClient.put(params).promise();
+}
 
 const tokenToJwt = async (electionId, token) => {
     let jwtSecret = await getJwtSecret(electionId)
@@ -86,6 +97,7 @@ const authorizeKey = async (electionId, key) => {
 }
 
 module.exports = {
+    recordAuthId: recordAuthId,
     tokenToJwt: tokenToJwt,
     authorizeKey: authorizeKey
 }

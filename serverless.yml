@@ -260,6 +260,10 @@ resources:
                     Action:
                       - kms:Decrypt
                     Resource: "arn:aws:kms:us-east-1:891335278704:key/994f296e-ce2c-4f2b-8cef-48d16644af09"
+                  - Effect: Allow
+                    Action:
+                      - dynamodb:PutItem
+                    Resource: "arn:aws:dynamodb:us-east-1:891335278704:table/authIds"
 
 
 
