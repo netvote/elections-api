@@ -1,6 +1,6 @@
 const AWS = require("aws-sdk")
 const url = require('url');
-const nvReq = require('./netvote-request')
+const nvReq = require('./lib/netvote-request')
 
 AWS.config.update({ region: 'us-east-1' });
 

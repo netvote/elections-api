@@ -3,22 +3,14 @@
 const utils = require("../lib/utils")
 const electionData = require("../lib/election")
 const auth = require("./lib/auth")
+const nvEncrypt = require('../lib/encryption')
 
-
-const extractToken = (event) => {
-    let authorization = event.headers.Authorization;
-    if(authorization){
-        let token = authorization.replace(/Bearer /, "");
-        return token;
-    }
-    return null;
-}
 
 module.exports.create = async (event, context) => {
 
   try {
 
-    let token = extractToken(event);
+    let token = nvEncrypt.extractAuthHeader(event);
     if(!token){
         return utils.error(401, "unauthorized");
     }
@@ -43,7 +35,7 @@ module.exports.create = async (event, context) => {
         return utils.error(401, "unauthorized");
     }
 
-    let jwt = await auth.tokenToJwt(electionId, token)
+    let jwt = await nvEncrypt.createJwt(electionId, token)
     await auth.recordAuthId(electionId, token);
 
     console.log({electionId: electionId, message:"authorized voter"});

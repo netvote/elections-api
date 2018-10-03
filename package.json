@@ -16,7 +16,11 @@
     "serverless-domain-manager": "^2.6.5"
   },
   "dependencies": {
+    "ipfs-mini": "^1.1.2",
     "joi": "^13.7.0",
-    "njwt": "^0.4.0"
+    "njwt": "^0.4.0",
+    "protobufjs": "^6.8.8",
+    "ursa": "^0.9.4",
+    "web3-utils": "^1.0.0-beta.36"
   }
 }

@@ -1,5 +1,8 @@
 const assert = require('assert');
 const nv = require("./netvote-admin-apis");
+const VOTES = require("./vote-examples").VOTES;
+
+
 nv.Init({
     id: process.env.NETVOTE_DEV_API_ID,
     secret: process.env.NETVOTE_DEV_API_SECRET,
@@ -27,6 +30,7 @@ describe(`End to End Election`, function() {
 
     let electionId;
     let voterKeys;
+    let tokens = [];
 
     it('should create election', async () => {
         let job = await nv.CreateElection({
@@ -108,10 +112,13 @@ describe(`End to End Election`, function() {
     it('should get an auth token', async ()=> {
         let tok = await publicNv.GetJwtToken(electionId, voterKeys[0])
         assert.equal(tok.token != null, true, "should have a token")
+        tokens.push(tok.token);
     })
 
-    it.skip('should cast a vote', async ()=> {
-        //TODO: implement
+    it('should cast a vote', async ()=> {
+        let job = await publicNv.CastSignedVote(electionId, tokens[0], VOTES.VOTE_0_0_0)
+        assert.equal(job.jobId != null, true, "jobId should be present")
+        assert.equal(job.status, "pending", "status should be pending")
     })
 
     it('should stop and close election', async () => {

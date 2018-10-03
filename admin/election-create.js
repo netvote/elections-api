@@ -1,7 +1,7 @@
 'use strict';
 
 const utils = require("../lib/utils")
-const async = require("./lib/async")
+const async = require("../lib/async")
 const Joi = require('joi');
 
 const createElectionSchema = Joi.object().keys({
@@ -12,6 +12,8 @@ const createElectionSchema = Joi.object().keys({
   netvoteKeyAuth: Joi.boolean().default(false),
   allowUpdates: Joi.boolean().default(false),
   closeAfter: Joi.date().default(new Date().getTime()),
+  voteStartTime: Joi.date().default(new Date().getTime()),
+  voteEndTime: Joi.date().default(0),
   network: Joi.string().only("netvote", "ropsten", "mainnet").required()
 })
 
@@ -33,6 +35,8 @@ module.exports.create = async (event, context) => {
           netvoteKeyAuth: params.netvoteKeyAuth,
           metadataLocation: params.metadataLocation,
           autoActivate: params.autoActivate,
+          voteStartTime: params.voteStartTime,
+          voteEndTime: params.voteEndTime,
           isDemo: false, 
           uid: user.id
       }

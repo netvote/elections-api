@@ -6,15 +6,14 @@ const async = require("../lib/async")
 module.exports.lookup = async (event, context) => {
 
   try {
-    const user = utils.getUser(event);
     const jobId = event.pathParameters.jobId;
+    const job = await async.getJob(jobId);
 
-    // jobIDs must start with the user's ID
-    if(jobId.indexOf(user.id) !== 0){
-      return utils.error(403, "forbidden")
+    if(job.name !== "election-cast-vote") {
+      console.log({message: 'attempt to load non-vote from public job lookup'})
+      return utils.error(404, "not found");
     }
 
-    const job = await async.getJob(jobId);
     return utils.success(job)
 
   } catch (e) {

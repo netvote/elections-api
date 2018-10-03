@@ -1,5 +1,6 @@
 const url = require('url');
-const nvReq = require('./netvote-request')
+const nvReq = require('./lib/netvote-request')
+const nvEncoder = require('./lib/netvote-signatures')
 
 let BASE_URL;
 let ready=false;
@@ -38,6 +39,29 @@ module.exports = {
     let headers = {
       "Authorization": `Bearer ${token}`
     }
-    return await netvotePost(`/vote/election/${electionId}/auth`, null, headers)
+    return await netvotePost(`/public/election/${electionId}/auth`, null, headers)
+  },
+  CastVote: async(electionId, token, voteObject) => {
+    let vote = await nvEncoder.encodeVote(voteObject, false);
+    let payload = {
+      vote: vote
+    }
+    let headers = {
+      "Authorization": `Bearer ${token}`
+    }
+    return await netvotePost(`/public/election/${electionId}/vote`, payload, headers)
+  },
+  CastSignedVote: async(electionId, token, voteObject) => {
+    let voteBase64 = await nvEncoder.encodeVote(voteObject, true);
+    let proof = await nvEncoder.signVote(voteBase64);
+
+    let payload = {
+      vote: voteBase64,
+      proof: proof
+    }
+    let headers = {
+      "Authorization": `Bearer ${token}`
+    }
+    return await netvotePost(`/public/election/${electionId}/vote`, payload, headers)
   }
 }

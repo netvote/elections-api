@@ -1,7 +1,7 @@
 'use strict';
 
 const utils = require("../lib/utils")
-const async = require("./lib/async")
+const async = require("../lib/async")
 const electionData = require("./lib/election")
 const Joi = require('joi');
 
