@@ -159,7 +159,7 @@ const validateChoices = (choices, decisionsMetadata) => {
 };
 
 // only supports single-tiered ballot currently
-const validateVoteObject = async (election, vote) => {
+const validateVote = async (election, vote) => {
     let metadataLocation = election.props.metadataLocation;
     let requireProof = election.props.requireProof;
 
@@ -189,15 +189,24 @@ const encryptVote = async(electionId, voteObj, weight) => {
     return nvEncrypt.encrypt(electionId, vote);
 }
 
-const validateVote = async(el, voteObject, proof) => {
-    await validateVoteObject(el, voteObject);
-    if(el.props.requireProof){
-        // TODO validate proof
+const validateProof = async (voteBase64, proof) => {
+    if(!proof){
+        throw new Error("proof is required")
     }
+    const proofObj = await getFromIPFS(proof);
+    if(!proofObj.signature){
+        throw new Error("signature is not specified in IPFS proof")
+    }
+    if(!proofObj.publicKey){
+        throw new Error("publicKey is not specified in IPFS proof")
+    }
+    return nvEncrypt.checkSignature(voteBase64, proofObj.publicKey, proofObj.signature)
 }
+
 
 module.exports = {
     parseVote: parseVote,
     validateVote: validateVote,
+    validateProof: validateProof,
     encryptVote: encryptVote
 }

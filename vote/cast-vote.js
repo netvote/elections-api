@@ -27,7 +27,7 @@ module.exports.cast = async (event, context) => {
         voter = await nvEncrypt.verifyElectionJwt(token);
     } catch (e) {
         console.error(e);
-        console.info({message: "token invalid", error :e.message});
+        console.info({message: "token invalid", error: e.message});
         return utils.error(403, "token is invalid")
     }
 
@@ -48,12 +48,20 @@ module.exports.cast = async (event, context) => {
 
     let vote = await voteUtils.parseVote(params.vote);
 
-    // validate schema
+    // validate vote contents
     try{
-        await voteUtils.validateVote(el, vote, params.proof);
+        await voteUtils.validateVote(el, vote);
     } catch(e) {
-        console.error(e);
-        return utils.error(400, e);
+        console.error({electionId: electionId, message: "invalid vote", error: e.message});
+        return utils.error(400, e.message);
+    }
+
+    // validate signature
+    try{
+        await voteUtils.validateProof(params.vote, params.proof);
+    } catch(e) {
+        console.error({electionId: electionId, message: "invalid proof", error: e.message});
+        return utils.error(400, e.message);
     }
 
     let encryptedVote = await voteUtils.encryptVote(electionId, vote, voter.weight);
