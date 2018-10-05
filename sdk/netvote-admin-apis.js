@@ -75,13 +75,16 @@ module.exports = {
     checkReady();
     return await netvoteGet(`/admin/job/${jobId}`)
   },
-  AdminPollJob: async(jobId, timeout) => {
+  PollJob: async(jobId, timeout) => {
     let now = new Date().getTime();
     let expired = now + timeout;
 
     while(new Date().getTime() < expired){
       let job = await netvoteGet(`/admin/job/${jobId}`);
       if(job.txStatus !== "pending"){
+        if(job.txStatus === "error"){
+          throw new Error(job);
+        }
         return job;
       }
       //wait 1 second

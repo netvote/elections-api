@@ -42,7 +42,7 @@ describe(`End to End Election`, function() {
         assert.equal(checkJob.txStatus, "pending", "should be in pending state")
 
         // give it one minute to complete
-        let finished = await nv.AdminPollJob(job.jobId, 60000);
+        let finished = await nv.PollJob(job.jobId, 60000);
 
         assert.equal(finished.txStatus, "complete", "should be in complete state")
         assert.equal(finished.txResult.address != null, true, "address should be set")
@@ -78,7 +78,7 @@ describe(`End to End Election`, function() {
         assert.equal(checkJob.txStatus, "pending", "should be in pending state")
 
         // give it one minute to complete
-        let finished = await nv.AdminPollJob(job.jobId, 60000);
+        let finished = await nv.PollJob(job.jobId, 60000);
 
         assert.equal(finished.txStatus, "complete", "should be in complete state")
 
@@ -134,7 +134,7 @@ describe(`End to End Election`, function() {
         assert.equal(checkJob.txStatus, "pending", "should be in pending state")
 
         // give it one minute to complete
-        let finished = await nv.AdminPollJob(job.jobId, 60000);
+        let finished = await nv.PollJob(job.jobId, 60000);
 
         assert.equal(finished.txStatus, "complete", "should be in complete state")
 
