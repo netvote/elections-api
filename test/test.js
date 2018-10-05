@@ -1,18 +1,10 @@
 const assert = require('assert');
-const nv = require("./netvote-admin-apis");
 const VOTES = require("./vote-examples").VOTES;
+const netvoteApis = require("../sdk")
 
 
-nv.Init({
-    id: process.env.NETVOTE_DEV_API_ID,
-    secret: process.env.NETVOTE_DEV_API_SECRET,
-    baseUrl: "https://elections-dev.netvote.io"
-})
-
-const publicNv = require("./netvote-public-apis");
-publicNv.Init({
-    baseUrl: "https://elections-dev.netvote.io"
-})
+const nv = netvoteApis.initAdminClient(process.env.NETVOTE_DEV_API_ID, process.env.NETVOTE_DEV_API_SECRET)
+const publicNv = netvoteApis.initVoterClient()
 
 const assertElectionState = async (electionId, state) => {
     await assertElectionValues(electionId, {electionStatus: state})
