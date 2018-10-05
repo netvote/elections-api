@@ -43,7 +43,7 @@ module.exports.create = async (event, context) => {
     }
 
     let jobId = await async.startJob("election-create", payload, user);
-    return utils.success({ status: "pending", jobId: jobId })
+    return utils.sendJobId(jobId)
 
   } catch (e) {
     return utils.error(400, e.message)

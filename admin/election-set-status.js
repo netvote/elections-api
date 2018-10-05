@@ -16,12 +16,12 @@ const setStatusSchema = Joi.object().keys({
 
 const stopElection = async (el, user) => {
   await electionData.setStatus(el.electionId, "stopped")
-  return utils.success({status:"complete", message: "election stopped"})
+  return utils.success({txStatus:"complete", message: "election stopped"})
 }
 
 const resumeElection = async (el, user) => {
   await electionData.setStatus(el.electionId, "voting")
-  return utils.success({status:"complete", message: "election resumed"})
+  return utils.success({txStatus:"complete", message: "election resumed"})
 }
 
 const activateElection = async (el, user) => {

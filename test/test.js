@@ -42,8 +42,8 @@ describe(`End to End Election`, function() {
             network: "netvote"
         });
 
-        assert.equal(job.jobId != null, true, "jobId should be present")
-        assert.equal(job.status, "pending", "status should be pending")
+        assert.equal(job.jobId != null, true, "jobId should be present: "+JSON.stringify(job))
+        assert.equal(job.txStatus, "pending", "status should be pending")
 
         // confirm initial job state
         let checkJob = await nv.AdminGetJob(job.jobId);
@@ -78,7 +78,7 @@ describe(`End to End Election`, function() {
         let job = await nv.SetElectionStatus(electionId, {
             status: "voting"
         });
-        assert.equal(job.jobId != null, true, "jobId should be present")
+        assert.equal(job.jobId != null, true, "jobId should be present: "+JSON.stringify(job))
 
 
         // confirm initial job state
@@ -97,7 +97,7 @@ describe(`End to End Election`, function() {
         let job = await nv.SetElectionStatus(electionId, {
             status: "stopped"
         });
-        assert.equal(job.status, "complete", "status should be complete")
+        assert.equal(job.txStatus, "complete", "status should be complete")
         await assertElectionState(electionId, "stopped")
     })
 
@@ -105,7 +105,7 @@ describe(`End to End Election`, function() {
         let job = await nv.SetElectionStatus(electionId, {
             status: "voting"
         });
-        assert.equal(job.status, "complete", "status should be complete")
+        assert.equal(job.txStatus, "complete", "status should be complete")
         await assertElectionState(electionId, "voting")
     })
 
@@ -117,15 +117,19 @@ describe(`End to End Election`, function() {
 
     it('should cast a vote', async ()=> {
         let job = await publicNv.CastSignedVote(electionId, tokens[0], VOTES.VOTE_0_0_0)
-        assert.equal(job.jobId != null, true, "jobId should be present")
-        assert.equal(job.status, "pending", "status should be pending")
+        assert.equal(job.jobId != null, true, "jobId should be present: "+JSON.stringify(job))
+        assert.equal(job.txStatus, "pending", "status should be pending")
+
+        let res = await publicNv.PollJob(job.jobId, 60000);
+        assert.equal(res.txResult.tx != null, true, "tx should be defined")
+        assert.equal(res.txStatus, "complete", "status should be complete")
     })
 
     it('should stop and close election', async () => {
         let stop = await nv.SetElectionStatus(electionId, {
             status: "stopped"
         });
-        assert.equal(stop.status, "complete", "status should be complete")
+        assert.equal(stop.txStatus, "complete", "status should be complete")
 
         let job = await nv.SetElectionStatus(electionId, {
             status: "closed"
@@ -145,8 +149,15 @@ describe(`End to End Election`, function() {
         await assertElectionValues(electionId, {electionStatus: "closed", resultsAvailable: true})
     })
 
-    it.skip('should tally correctly', async ()=> {
+    it('should tally correctly', async ()=> {
         //TODO: implement
+        let job = await publicNv.GetResults(electionId)
+        assert.equal(job.jobId != null, true, "jobId should be present: "+JSON.stringify(job))
+        assert.equal(job.txStatus, "pending", "status should be pending")
+
+        let res = await publicNv.PollJob(job.jobId, 60000);
+        assert.equal(res.txResult.results != null, true, "results should be defined")
+        assert.equal(res.txStatus, "complete", "status should be complete")
     })
 
 })

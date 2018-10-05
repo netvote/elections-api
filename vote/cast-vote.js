@@ -81,5 +81,5 @@ module.exports.cast = async (event, context) => {
     }
 
     let jobId = await async.startJob("election-cast-vote", payload)
-    return utils.success({ status: "pending", jobId: jobId })
+    return utils.sendJobId(jobId)
 };

@@ -63,5 +63,25 @@ module.exports = {
       "Authorization": `Bearer ${token}`
     }
     return await netvotePost(`/public/election/${electionId}/vote`, payload, headers)
+  },
+  GetResults: async(electionId) => {
+    checkReady();
+    return await netvoteGet(`/public/election/${electionId}/results`)
+  },
+  PollJob: async(jobId, timeout) => {
+    let now = new Date().getTime();
+    let expired = now + timeout;
+
+    while(new Date().getTime() < expired){
+      let job = await netvoteGet(`/public/job/${jobId}`);
+      if(job.txStatus !== "pending"){
+        return job;
+      }
+      //wait 1 second
+      await snooze(1000);
+    }
+  
+    throw new Error("timeout occured while polling for job");
+
   }
 }
