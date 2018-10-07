@@ -2,6 +2,7 @@ const AWS = require("aws-sdk")
 const https = require("https")
 const jose = require('node-jose');
 
+//TODO: make configurable
 const region = 'us-east-1';
 const userpool_id = 'us-east-1_XGFVRW86R';
 const app_client_id = '6d5bgvo3j82eli47c36c00sreb';
@@ -102,8 +103,6 @@ const generateIamPolicy = (principalId, Effect, Resource, context) => {
 
 
 exports.authorize = async (event, context, callback) => {
-    console.log(event);
-    console.log(context);
     try{
         let authorizationHeader = event.authorizationToken;
 
