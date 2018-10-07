@@ -7,7 +7,7 @@ const Joi = require('joi');
 
 const addKeysSchema = Joi.object().keys({
     generate: Joi.number().greater(0).less(1000),
-    keys: Joi.array().when('generate', { is: '0', then: Joi.array().min(1).items(Joi.string().required()) })
+    hashedKeys: Joi.array().when('generate', { is: '0', then: Joi.array().min(1).items(Joi.string().base64().required()) })
 }).without("generate", "keys")
 
 module.exports.add = async (event, context) => {
@@ -24,7 +24,7 @@ module.exports.add = async (event, context) => {
 }
 
 const storeKeys = async (event, params) => {
-    let keys = params.keys;
+    let keys = params.hashedKeys;
     let user = utils.getUser(event);
     let electionId = event.pathParameters.id;
     let el = await electionData.getElection(electionId, user);
@@ -41,7 +41,7 @@ const storeKeys = async (event, params) => {
     for (let i = 0; i < keys.length; i++) {
         saves.push(electionData.saveVoterKey({
             electionId: electionId,
-            hashedKey: utils.sha256Hash(keys[i]),
+            hashedKey: keys[i],
             user: user,
             enabled: true
         }))

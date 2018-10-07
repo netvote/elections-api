@@ -1,10 +1,17 @@
 const assert = require('assert');
 const VOTES = require("./vote-examples").VOTES;
 const netvoteApis = require("../sdk")
+const crypto = require("crypto");
 
 
 const nv = netvoteApis.initAdminClient(process.env.NETVOTE_DEV_API_ID, process.env.NETVOTE_DEV_API_SECRET)
 const publicNv = netvoteApis.initVoterClient()
+
+const sha256Hash = (str) => {
+    let hash = crypto.createHash("sha256")
+    hash.update(str);
+    return hash.digest().toString("base64");
+}
 
 const assertElectionState = async (electionId, state) => {
     await assertElectionValues(electionId, {electionStatus: state})
@@ -62,7 +69,12 @@ describe(`End to End Election`, function() {
     })
 
     it('should add a key', async ()=> {
-        let res = await nv.AddVoterKeys(electionId, {keys: ["test1","test2","test3"]});
+        let hashedKeys = []
+        let keys = ["test1","test2","test3"];
+        keys.forEach((k) => {
+            hashedKeys.push(sha256Hash(k));
+        })
+        let res = await nv.AddVoterKeys(electionId, {hashedKeys: hashedKeys});
         assert.equal(res.count, 3, "should have a count of 3")
     })
 
@@ -101,8 +113,14 @@ describe(`End to End Election`, function() {
         await assertElectionState(electionId, "voting")
     })
 
-    it('should get an auth token', async ()=> {
+    it('should get an auth token with generated key', async ()=> {
         let tok = await publicNv.GetJwtToken(electionId, voterKeys[0])
+        assert.equal(tok.token != null, true, "should have a token")
+        tokens.push(tok.token);
+    })
+
+    it('should get an auth token with uploaded key', async ()=> {
+        let tok = await publicNv.GetJwtToken(electionId, "test1")
         assert.equal(tok.token != null, true, "should have a token")
         tokens.push(tok.token);
     })
