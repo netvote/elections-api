@@ -20,6 +20,10 @@ provider:
   stage: ${opt:stage, 'dev'}
 
 functions:
+  adminAuthorizer:
+    role: adminAuthorizerRole
+    handler: authorizer/admin-authorizer.authorize
+    
   createElection:
     handler: admin/election-create.create
     role: adminApiRole
@@ -28,9 +32,7 @@ functions:
           path: admin/election
           method: post
           cors: true
-          authorizer:
-            name: authorizer
-            arn: arn:aws:cognito-idp:us-east-1:891335278704:userpool/us-east-1_XGFVRW86R
+          authorizer: adminAuthorizer
 
   setElectionStatus:
     handler: admin/election-set-status.setStatus
@@ -40,9 +42,7 @@ functions:
           path: admin/election/{id}/status
           method: post
           cors: true
-          authorizer:
-            name: authorizer
-            arn: arn:aws:cognito-idp:us-east-1:891335278704:userpool/us-east-1_XGFVRW86R
+          authorizer: adminAuthorizer
 
   setElectionPublicJwt:
     handler: admin/election-set-jwt.set
@@ -52,9 +52,7 @@ functions:
           path: admin/election/{id}/jwt
           method: post
           cors: true
-          authorizer:
-            name: authorizer
-            arn: arn:aws:cognito-idp:us-east-1:891335278704:userpool/us-east-1_XGFVRW86R
+          authorizer: adminAuthorizer
 
   addVoterKeys:
     handler: admin/auth-keys.add
@@ -64,9 +62,7 @@ functions:
           path: admin/election/{id}/keys
           method: post
           cors: true
-          authorizer:
-            name: authorizer
-            arn: arn:aws:cognito-idp:us-east-1:891335278704:userpool/us-east-1_XGFVRW86R
+          authorizer: adminAuthorizer
 
   jobLookup:
     handler: admin/job-lookup.lookup
@@ -76,9 +72,7 @@ functions:
           path: admin/job/{jobId}
           method: get
           cors: true
-          authorizer:
-            name: authorizer
-            arn: arn:aws:cognito-idp:us-east-1:891335278704:userpool/us-east-1_XGFVRW86R
+          authorizer: adminAuthorizer
 
   getElection:
     handler: public/get-election.get
@@ -192,7 +186,7 @@ resources:
                     Action:
                       - lambda:InvokeFunction
                     Resource: "arn:aws:lambda:us-east-1:891335278704:function:election-cast-vote"
-                    
+
     publicApiRole:
       Type: AWS::IAM::Role
       Properties:
@@ -453,5 +447,48 @@ resources:
                       - lambda:InvokeFunction
                     Resource: "arn:aws:lambda:us-east-1:891335278704:function:election-tally"
 
-
+    adminAuthorizerRole:
+      Type: AWS::IAM::Role
+      Properties:
+        Path: /api/vote/cast/
+        RoleName: adminAuthorizerPolicyRole_${self:provider.stage}
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action: sts:AssumeRole
+        Policies:
+          - PolicyName: adminAuthorizerPolicy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                  - Effect: Allow 
+                    Action:
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
+                    Resource: 
+                    - 'Fn::Join':
+                      - ':'
+                      -
+                        - 'arn:aws:logs'
+                        - Ref: 'AWS::Region'
+                        - Ref: 'AWS::AccountId'
+                        - 'log-group:/aws/lambda/*:*:*'
+                  - Effect: "Allow"
+                    Action:
+                      - "s3:PutObject"
+                    Resource:
+                      Fn::Join:
+                        - ""
+                        - - "arn:aws:s3:::"
+                          - "Ref" : "ServerlessDeploymentBucket"
+                  - Effect: Allow
+                    Action:
+                      - cognito-idp:AdminInitiateAuth
+                    Resource: "arn:aws:cognito-idp:us-east-1:891335278704:userpool/us-east-1_XGFVRW86R"     
+                    
                     

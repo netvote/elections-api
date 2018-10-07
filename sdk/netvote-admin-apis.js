@@ -10,19 +10,24 @@ let BASE_URL;
 let ready=false;
 
 let authToken = async () => {var sp = new AWS.CognitoIdentityServiceProvider({apiVersion: '2016-04-18'});
-    var authParams = {
+    const authParams = {
         USERNAME : ID,
         PASSWORD : SECRET
     };
 
-    let params = {
+    const params = {
         UserPoolId: "us-east-1_XGFVRW86R",
         ClientId: "6d5bgvo3j82eli47c36c00sreb",
         AuthFlow: "ADMIN_NO_SRP_AUTH",
         AuthParameters: authParams
     }
-    let data = await sp.adminInitiateAuth(params).promise();
+    const data = await sp.adminInitiateAuth(params).promise();
     return data.AuthenticationResult.IdToken
+}
+
+let authBasic = () => {
+  let token = new Buffer(`${ID}:${SECRET}`).toString("base64");
+  return `Basic ${token}`;
 }
 
 const authentify = async (headers) => {

@@ -55,7 +55,9 @@ const netvoteUnsafeRequest = (method, host, path, postObj, headers) => {
                 });
                 res.on('end', () => {
                     try {
-                        resolve(JSON.parse(body))
+                        let resultBody = JSON.parse(body)
+                        //console.log(resultBody);
+                        resolve(resultBody)
                     } catch (e) {
                         if (body && body.indexOf("500 Server Error") > -1) {
                             console.error("500 error")

@@ -24,6 +24,12 @@ module.exports.create = async (event, context) => {
     let params = await utils.validate(event.body, createElectionSchema);
     let user = utils.getUser(event);
 
+    if(params.network === "mainnet"){
+      if(!user.mainnet){
+        return utils.error(403, "user does not have permission to use mainnet")
+      }
+    }
+
     let payload = {
       network: params.network,
       election: {
