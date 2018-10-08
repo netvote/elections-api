@@ -100,7 +100,7 @@ functions:
     role: voteAuthApiRole
     events:
       - http:
-          path: public/election/{id}/auth
+          path: public/election/{id}/auth/{format}
           method: post
           cors: true
 

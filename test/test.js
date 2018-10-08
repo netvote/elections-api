@@ -124,6 +124,11 @@ describe(`End to End Election`, function() {
         tokens.push(tok.token);
     })
 
+    it('should get an auth token QR with generated key', async ()=> {
+        let tok = await publicNv.GetJwtTokenQR(electionId, voterKeys[0])
+        assert.equal(tok.qr != null, true, "should have a qr")
+    })
+
     it('should get an auth token with uploaded key', async ()=> {
         let tok = await publicNv.GetJwtToken(electionId, "test1")
         assert.equal(tok.token != null, true, "should have a token")

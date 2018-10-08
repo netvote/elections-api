@@ -39,7 +39,14 @@ module.exports = {
     let headers = {
       "Authorization": `Bearer ${token}`
     }
-    return await netvotePost(`/public/election/${electionId}/auth`, null, headers)
+    return await netvotePost(`/public/election/${electionId}/auth/jwt`, null, headers)
+  },
+  GetJwtTokenQR: async(electionId, token) => {
+    checkReady();
+    let headers = {
+      "Authorization": `Bearer ${token}`
+    }
+    return await netvotePost(`/public/election/${electionId}/auth/qr`, null, headers)
   },
   CastVote: async(electionId, token, voteObject) => {
     let vote = await nvEncoder.encodeVote(voteObject, false);
