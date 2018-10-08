@@ -86,7 +86,8 @@ const getClaims = async (token) => {
     })
 }
 
-const generateIamPolicy = (principalId, Effect, Resource, context) => {
+const generateIamPolicy = (principalId, Effect, methodArn, context) => {
+    let prefix = methodArn.split("/")[0];
     return {
         principalId: principalId,
         policyDocument: {
@@ -94,7 +95,7 @@ const generateIamPolicy = (principalId, Effect, Resource, context) => {
             Statement: [{ 
                 Action: 'execute-api:Invoke', 
                 Effect: Effect, 
-                Resource: `arn:aws:execute-api:us-east-1:891335278704:xbg2p0sfld/dev/*/admin/*` 
+                Resource: `${prefix}/*/*/admin/*` 
             }],
         },
         context

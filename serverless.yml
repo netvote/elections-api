@@ -2,22 +2,10 @@ service: netvote-api
 
 frameworkVersion: ">=1.1.0 <2.0.0"
 
-plugins:
-  - serverless-domain-manager
-
-custom:
-  customDomain:
-    domainName: elections-${self:provider.stage}.netvote.io
-    stage: ${self:provider.stage}
-    basePath: ''
-    certificateName: '*.netvote.io'
-    createRoute53Record: false
-    endpointType: 'regional'
-
 provider:
   name: aws
   runtime: nodejs8.10
-  stage: ${opt:stage, 'dev'}
+  stage: ${opt:stage, 'beta'}
 
 functions:
   adminAuthorizer:
