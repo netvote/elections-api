@@ -3,7 +3,13 @@ const VOTES = require("./vote-examples").VOTES;
 const netvoteApis = require("../sdk")
 const crypto = require("crypto");
 
-const nv = netvoteApis.initAdminClient(process.env.NETVOTE_DEV_API_ID, process.env.NETVOTE_DEV_API_SECRET, 'dev')
+const nv = netvoteApis.initAdminClient(
+    process.env.NETVOTE_API_KEY, 
+    process.env.NETVOTE_API_ID, 
+    process.env.NETVOTE_API_SECRET, 
+    'dev'
+)
+
 const publicNv = netvoteApis.initVoterClient('dev')
 
 const sha256Hash = (str) => {

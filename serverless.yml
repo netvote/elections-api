@@ -6,11 +6,19 @@ provider:
   name: aws
   runtime: nodejs8.10
   stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'us-east-1'}
+  appClientId: 6d5bgvo3j82eli47c36c00sreb
+  userPoolId: us-east-1_XGFVRW86R
 
 functions:
   adminAuthorizer:
     role: adminAuthorizerRole
     handler: authorizer/admin-authorizer.authorize
+    environment:
+      region: ${self:provider.region}
+      appClientId: ${self:provider.appClientId}
+      userPoolId: ${self:provider.userPoolId}
+
     
   createElection:
     handler: admin/election-create.create
@@ -20,6 +28,7 @@ functions:
           path: admin/election
           method: post
           cors: true
+          private: true
           authorizer: adminAuthorizer
 
   setElectionStatus:
@@ -30,6 +39,7 @@ functions:
           path: admin/election/{id}/status
           method: post
           cors: true
+          private: true
           authorizer: adminAuthorizer
 
   getVoteTransactions:
@@ -40,6 +50,7 @@ functions:
           path: admin/election/{id}/votes
           method: get
           cors: true
+          private: true
           authorizer: adminAuthorizer
 
   setElectionPublicJwt:
@@ -50,6 +61,7 @@ functions:
           path: admin/election/{id}/jwt
           method: post
           cors: true
+          private: true
           authorizer: adminAuthorizer
 
   addVoterKeys:
@@ -60,6 +72,7 @@ functions:
           path: admin/election/{id}/keys
           method: post
           cors: true
+          private: true
           authorizer: adminAuthorizer
 
   jobLookup:
@@ -70,6 +83,7 @@ functions:
           path: admin/job/{jobId}
           method: get
           cors: true
+          private: true
           authorizer: adminAuthorizer
 
   getElection:

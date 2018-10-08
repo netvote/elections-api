@@ -7,11 +7,12 @@ const initVoterClient = (version) => {
     return publicNv;
 }
 
-const initAdminClient = (apiKey, secret, version) => {
+const initAdminClient = (apiKey, id, secret, version) => {
     let v = version || "v1";
     const nv = require("./netvote-admin-apis");
     nv.Init({
-        id: apiKey,
+        apiKey: apiKey,
+        id: id,
         secret: secret,
         baseUrl: `https://elections.netvote.io/${v}`
     })

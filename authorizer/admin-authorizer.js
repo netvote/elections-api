@@ -2,10 +2,9 @@ const AWS = require("aws-sdk")
 const https = require("https")
 const jose = require('node-jose');
 
-//TODO: make configurable
-const region = 'us-east-1';
-const userpool_id = 'us-east-1_XGFVRW86R';
-const app_client_id = '6d5bgvo3j82eli47c36c00sreb';
+const region = process.env.region;
+const userpool_id = process.env.userPoolId;
+const app_client_id = process.env.appClientId;
 const keys_url = 'https://cognito-idp.' + region + '.amazonaws.com/' + userpool_id + '/.well-known/jwks.json';
 
 // check cognito username/password

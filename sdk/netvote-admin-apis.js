@@ -7,6 +7,7 @@ AWS.config.update({ region: 'us-east-1' });
 let ID;
 let SECRET;
 let BASE_URL;
+let API_KEY;
 let ready=false;
 
 let authToken = async () => {var sp = new AWS.CognitoIdentityServiceProvider({apiVersion: '2016-04-18'});
@@ -34,6 +35,7 @@ const authentify = async (headers) => {
   let token = await authToken();
   let reqHeaders = headers || {}
   reqHeaders['Authorization'] = `Bearer ${token}`;
+  reqHeaders['x-api-key'] = API_KEY;
   return reqHeaders;
 }
 
@@ -61,6 +63,7 @@ module.exports = {
   Init: async(params) => {
     ID = params.id;
     SECRET = params.secret;
+    API_KEY = params.apiKey;
     BASE_URL = url.parse(params.baseUrl);
     ready=true;
   },
