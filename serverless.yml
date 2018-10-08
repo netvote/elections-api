@@ -5,7 +5,7 @@ frameworkVersion: ">=1.1.0 <2.0.0"
 provider:
   name: aws
   runtime: nodejs8.10
-  stage: ${opt:stage, 'beta'}
+  stage: ${opt:stage, 'dev'}
 
 functions:
   adminAuthorizer:
@@ -29,6 +29,16 @@ functions:
       - http:
           path: admin/election/{id}/status
           method: post
+          cors: true
+          authorizer: adminAuthorizer
+
+  getVoteTransactions:
+    handler: admin/election-votes.getVotes
+    role: adminApiRole
+    events:
+      - http:
+          path: admin/election/{id}/votes
+          method: get
           cors: true
           authorizer: adminAuthorizer
 

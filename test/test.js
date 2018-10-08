@@ -134,6 +134,12 @@ describe(`End to End Election`, function() {
         assert.equal(res.txStatus, "complete", "status should be complete")
     })
 
+    it('should get vote transactions', async ()=> {
+        let votes = await nv.GetVoteTransactions(electionId)
+        assert.equal(votes.stats.complete, 1, "should have 1 complete vote")
+        assert.equal(votes.transactions.length, 1, "should have one transaction")
+    })
+
     it('should stop and close election', async () => {
         let stop = await nv.SetElectionStatus(electionId, {
             status: "stopped"

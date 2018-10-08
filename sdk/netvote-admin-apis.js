@@ -80,6 +80,10 @@ module.exports = {
     checkReady();
     return await netvoteGet(`/admin/job/${jobId}`)
   },
+  GetVoteTransactions: async(id) => {
+    checkReady();
+    return await netvoteGet(`/admin/election/${id}/votes`)
+  },
   PollJob: async(jobId, timeout) => {
     let now = new Date().getTime();
     let expired = now + timeout;
