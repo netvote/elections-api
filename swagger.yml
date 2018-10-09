@@ -85,7 +85,7 @@ paths:
       tags:
         - Election Administration
       requestBody:
-        description: "Election status"
+        description: "Public PEM file"
         required: true
         content:
           application/json:
@@ -125,9 +125,7 @@ paths:
         content:
           application/json:
             schema:
-              oneOf:
-                - $ref: "#/components/schemas/KeyGeneration"
-                - $ref: "#/components/schemas/HashedKeys"
+              $ref: "#/components/schemas/KeyGeneration"
       parameters:
        - in: path
          name: id   
@@ -280,7 +278,7 @@ paths:
     post:
       summary: "Exchanges voter Key for one-time use anonymized JWT token if netvoteKeyAuth is enabled for Election"
       description: "If format is QR, will additionally return JWT inside of a data-type URL for HTML display"
-      operationId: "getPublicJob"
+      operationId: "getVoterAuthToken"
       security:
       - bearerAuth: []
         apiKeyAuth: []
@@ -322,6 +320,13 @@ paths:
         apiKeyAuth: []
       tags:
         - Cast Vote
+      requestBody:
+        description: "Vote object"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Vote"
       parameters:
        - in: path
          name: id   
@@ -566,6 +571,13 @@ components:
           - "pending"
           - "complete"
           - "error"
+    Vote:
+      type: object
+      properties:
+        vote:
+          type: string
+        proof:
+          type: string
     KeyResult:
       type: "object"
       properties:
