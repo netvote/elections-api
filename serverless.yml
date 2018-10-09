@@ -100,7 +100,7 @@ functions:
     role: voteAuthApiRole
     events:
       - http:
-          path: public/election/{id}/auth/{format}
+          path: voter/election/{id}/auth/{format}
           method: post
           cors: true
 
@@ -109,7 +109,7 @@ functions:
     role: castVoteRole
     events:
       - http:
-          path: public/election/{id}/vote
+          path: voter/election/{id}/vote
           method: post
           cors: true
 

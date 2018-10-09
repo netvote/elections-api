@@ -1,8 +1,8 @@
 openapi: "3.0.0"
 info:
-  description: "Netvote Admin API"
+  description: "Netvote API"
   version: "1.0.0"
-  title: "Netvote Admin API"
+  title: "Netvote API"
   termsOfService: "https://netvote.io/terms/"
   contact:
     email: "steven@netvote.io"
@@ -12,15 +12,17 @@ info:
 servers:
   - url: https://elections.netvote.io/v1/
     description: API Endpoint for Elections
-security:
-  - basicAuth: []
-    apiKeyAuth: []
 paths:
   /admin/election:
     post:
       summary: "Create a new Election"
       description: "Create a new election and deploy as a smart contract"
       operationId: "createElection"
+      security:
+      - basicAuth: []
+        apiKeyAuth: []
+      tags:
+        - Election Administration
       requestBody:
         description: Election properties
         required: true
@@ -42,6 +44,11 @@ paths:
       summary: "Set status of existing Election"
       description: "This will transition the election to the specified state."
       operationId: "setElectionStatus"
+      security:
+      - basicAuth: []
+        apiKeyAuth: []
+      tags:
+        - Election Administration
       parameters:
        - in: path
          name: id   
@@ -72,6 +79,11 @@ paths:
       summary: "Set public JWT Key for voter authentication"
       description: ""
       operationId: "setPublicJwt"
+      security:
+      - basicAuth: []
+        apiKeyAuth: []
+      tags:
+        - Election Administration
       requestBody:
         description: "Election status"
         required: true
@@ -99,9 +111,14 @@ paths:
                 $ref: '#/components/schemas/JobStart'
   /admin/election/{id}/keys:
     post:
-      summary: "Sets or generates Voter Keys for election"
+      summary: "Add or generate Voter Keys for election"
       description: "If count is populated, will generate and return those keys.  Otherwise, will upload base64-encoded sha256 keys found in the hashedKeys array."
       operationId: "setVoterKeys"
+      security:
+      - basicAuth: []
+        apiKeyAuth: []
+      tags:
+        - Election Administration
       requestBody:
         description: "Election key set object"
         required: true
@@ -134,6 +151,11 @@ paths:
       summary: "Retrieves the Async Job status (from create or set status actions)"
       description: "Only the admin who created the job may retrieve job status"
       operationId: "getAdminAsyncJob"
+      security:
+      - basicAuth: []
+        apiKeyAuth: []
+      tags:
+        - Election Administration
       parameters:
        - in: path
          name: id   
@@ -152,8 +174,177 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Job'
+  /admin/election/{id}/votes:
+    get:
+      summary: "Retrieves the list of encrypted votes and submission status from a database"
+      description: "Returns each unique vote (updates are separate entries)"
+      operationId: "getVotes"
+      security:
+      - basicAuth: []
+        apiKeyAuth: []
+      tags:
+        - Election Administration
+      parameters:
+       - in: path
+         name: id   
+         required: true
+         schema:
+           type: string
+           description: The job ID
+      responses:
+        400:
+          description: "Invalid input"
+        404:
+          description: "Job not found"
+        200:
+          description: Key Result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VoteList'
+  /public/election/{id}:
+    get:
+      summary: "Retrieves the election information for ballot display"
+      description: "Anyone may retrieve basic election information"
+      operationId: "getElection"
+      tags:
+        - Election Public Data
+      parameters:
+       - in: path
+         name: id   
+         required: true
+         schema:
+           type: string
+           description: The job ID
+      responses:
+        400:
+          description: "Invalid input"
+        404:
+          description: "Election not found"
+        200:
+          description: Election Data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Election'
+  /public/election/{id}/results:
+    get:
+      summary: "Starts an asynchronous Tally execution"
+      operationId: "getPublicResults"
+      tags:
+        - Election Public Data
+      parameters:
+       - in: path
+         name: id   
+         required: true
+         schema:
+           type: string
+           description: The election ID
+      responses:
+        400:
+          description: "Invalid input"
+        404:
+          description: "Election not found"
+        200:
+          description: Job Start Object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobStart'
+  /public/job/{id}:
+    get:
+      summary: "Retrieves status or result of a Vote or Tally async Job"
+      description: ""
+      operationId: "getPublicJob"
+      tags:
+        - Election Public Data
+      parameters:
+       - in: path
+         name: id   
+         required: true
+         schema:
+           type: string
+           description: The job ID
+      responses:
+        400:
+          description: "Invalid input"
+        404:
+          description: "Job not found"
+        200:
+          description: Async Tally Job
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Job'
+  /voter/election/{id}/auth/{format}:
+    post:
+      summary: "Exchanges voter Key for one-time use anonymized JWT token if netvoteKeyAuth is enabled for Election"
+      description: "If format is QR, will additionally return JWT inside of a data-type URL for HTML display"
+      operationId: "getPublicJob"
+      security:
+      - bearerAuth: []
+        apiKeyAuth: []
+      tags:
+        - Voter Authentication
+      parameters:
+       - in: path
+         name: id   
+         required: true
+         schema:
+           type: string
+           description: The job ID
+       - in: path
+         name: format   
+         required: true
+         schema:
+           type: string
+           enum:
+            - jwt
+            - qr
+      responses:
+        400:
+          description: "Invalid input"
+        404:
+          description: "Job not found"
+        200:
+          description: Async Tally Job
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Job'
+  /voter/election/{id}/vote:
+    post:
+      summary: "Casts a vote"
+      description: ""
+      operationId: "castVote"
+      security:
+      - bearerAuth: []
+        apiKeyAuth: []
+      tags:
+        - Cast Vote
+      parameters:
+       - in: path
+         name: id   
+         required: true
+         schema:
+           type: string
+           description: The job ID
+      responses:
+        400:
+          description: "Invalid input"
+        404:
+          description: "Job not found"
+        200:
+          description: Async Vote Job
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobStart'
 components:
   securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
     basicAuth:
       type: http
       scheme: basic
@@ -197,6 +388,62 @@ components:
           - "netvote"
           - "ropsten"
           - "mainnet"
+    Election:
+      type: "object"
+      properties:
+        electionId:
+          type: string
+        network:
+          type: string
+          enum:
+          - netvote
+          - ropsten
+          - mainnet
+        version:
+          type: "integer"
+          format: int32
+        electionStatus:
+          type: "string"
+          description: "Transaction Status"
+          enum:
+          - "voting"
+          - "stopped"
+          - "closed"
+          - "building"
+        resultsAvailable:
+          type: boolean
+        company:
+          type: string
+        txId:
+          type: string
+        netvoteKeyAuth:
+          type: boolean
+        owner:
+          type: string
+        address:
+          type: string
+        txTimestamp:
+          type: integer
+          format: int64
+        props:
+          type: object
+          properties:
+            allowUpdates:
+              type: boolean
+            requireProof:
+              type: boolean
+            closeAfter:
+              type: integer
+              format: int64
+            voteStartTime:
+              type: "integer"
+              format: int64
+            voteEndTime:
+              type: "integer"
+              format: int64
+            metadataLocation:
+              type: string
+          additionalProperties: {}
     ElectionStatus:
       type: "object"
       properties:
@@ -232,6 +479,61 @@ components:
           - "pending"
           - "complete"
           - "error"
+    VoteList:
+      type: "object"
+      properties:
+        stats: 
+          type: "object"
+          properties:
+            complete:
+              type: integer
+              format: int64
+            pending:
+              type: integer
+              format: int64
+            error:
+              type: integer
+              format: int64
+        transactions:
+            type: array
+            items:
+              type: object
+              properties:
+                event:
+                  type: object
+                  properties:
+                    electionId:
+                      type: string
+                    vote: 
+                      type: object
+                      properties:
+                        encryptedVote:
+                          type: string
+                        proof:
+                          type: string
+                        voteId:
+                          type: string
+                        tokenId:
+                          type: string
+                    jobId:
+                      type: string
+                voteId:
+                  type: string
+                txId:
+                  type: string
+                txTimestamp:
+                  type: integer
+                  format: int64
+                txStatus:
+                  type: string
+                  enum:
+                    - pending
+                    - complete
+                    - error
+                voterId:
+                  type: string
+                electionId:
+                  type: string
     Job:
       type: "object"
       properties:
