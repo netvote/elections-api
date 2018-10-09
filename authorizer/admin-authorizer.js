@@ -106,7 +106,10 @@ exports.authorize = async (event, context, callback) => {
     try{
         let authorizationHeader = event.authorizationToken;
 
-        if (!authorizationHeader) return callback('Unauthorized')
+        if (!authorizationHeader) {
+            callback(null, generateIamPolicy("unknown", "Deny", event.methodArn, {}));
+            return;
+        } 
 
         let token = authorizationHeader.split(' ')[1]
         if (authorizationHeader.indexOf("Basic") > - 1) {
@@ -121,6 +124,6 @@ exports.authorize = async (event, context, callback) => {
 
     } catch(e) {
         console.log("error evaluating jwt: ", e)
-        callback("unauthorized");
+        callback(null, generateIamPolicy("unknown", "Deny", event.methodArn,{}));
     }
 }

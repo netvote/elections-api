@@ -1,0 +1,279 @@
+openapi: "3.0.0"
+info:
+  description: "Netvote Admin API"
+  version: "1.0.0"
+  title: "Netvote Admin API"
+  termsOfService: "https://netvote.io/terms/"
+  contact:
+    email: "steven@netvote.io"
+  license:
+    name: "GPL 3.0"
+    url: "https://www.gnu.org/licenses/gpl-3.0.en.html"
+servers:
+  - url: https://elections.netvote.io/v1/
+    description: API Endpoint for Elections
+security:
+  - basicAuth: []
+    apiKeyAuth: []
+paths:
+  /admin/election:
+    post:
+      summary: "Create a new Election"
+      description: "Create a new election and deploy as a smart contract"
+      operationId: "createElection"
+      requestBody:
+        description: Election properties
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ElectionProperties"
+      responses:
+        400:
+          description: "Invalid input"
+        200:
+          description: Async Job Reference
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobStart'
+  /admin/election/{id}/status:
+    post:
+      summary: "Set status of existing Election"
+      description: "This will transition the election to the specified state."
+      operationId: "setElectionStatus"
+      parameters:
+       - in: path
+         name: id   
+         required: true
+         schema:
+           type: string
+           description: The election ID
+      requestBody:
+        description: "Election status"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ElectionStatus"
+      responses:
+        400:
+          description: "Invalid input"
+        404:
+          description: "Election not found"
+        200:
+          description: Async Job Reference
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobStart'
+  /admin/election/{id}/jwt:
+    post:
+      summary: "Set public JWT Key for voter authentication"
+      description: ""
+      operationId: "setPublicJwt"
+      requestBody:
+        description: "Election status"
+        required: true
+        content:
+          application/json:
+            schema:
+              type: string
+      parameters:
+       - in: path
+         name: id   
+         required: true
+         schema:
+           type: string
+           description: The election ID
+      responses:
+        400:
+          description: "Invalid input"
+        404:
+          description: "Election not found"
+        200:
+          description: Async Job Reference
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobStart'
+  /admin/election/{id}/keys:
+    post:
+      summary: "Sets or generates Voter Keys for election"
+      description: "If count is populated, will generate and return those keys.  Otherwise, will upload base64-encoded sha256 keys found in the hashedKeys array."
+      operationId: "setVoterKeys"
+      requestBody:
+        description: "Election key set object"
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: "#/components/schemas/KeyGeneration"
+                - $ref: "#/components/schemas/HashedKeys"
+      parameters:
+       - in: path
+         name: id   
+         required: true
+         schema:
+           type: string
+           description: The election ID
+      responses:
+        400:
+          description: "Invalid input"
+        404:
+          description: "Election not found"
+        200:
+          description: Key Result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KeyResult'
+  /admin/job/{id}:
+    get:
+      summary: "Retrieves the Async Job status (from create or set status actions)"
+      description: "Only the admin who created the job may retrieve job status"
+      operationId: "getAdminAsyncJob"
+      parameters:
+       - in: path
+         name: id   
+         required: true
+         schema:
+           type: string
+           description: The job ID
+      responses:
+        400:
+          description: "Invalid input"
+        404:
+          description: "Job not found"
+        200:
+          description: Key Result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Job'
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    apiKeyAuth:
+      description: "API Key"  
+      type: apiKey
+      in: header
+      name: x-api-key
+  schemas:
+    ElectionProperties:
+      type: "object"
+      properties:
+        autoActivate:
+          type: "boolean"
+          default: false
+        continuousReveal:
+          type: "boolean"
+          default: false
+        requireProof:
+          type: "boolean"
+          default: false
+        netvoteKeyAuth:
+          type: "boolean"
+          default: false
+        allowUpdates:
+          type: "boolean"
+          default: false
+        closeAfter:
+          type: "integer"
+          format: int64
+        voteStartTime:
+          type: "integer"
+          format: int64
+        voteEndTime:
+          type: "integer"
+          format: int64
+        network:
+          type: "string"
+          description: "Network for Deployment"
+          enum:
+          - "netvote"
+          - "ropsten"
+          - "mainnet"
+    ElectionStatus:
+      type: "object"
+      properties:
+        status:
+          type: "string"
+          description: "Transaction Status"
+          enum:
+          - "voting"
+          - "stopped"
+          - "closed"
+    KeyGeneration:
+      type: "object"
+      properties:
+        count:
+          type: "integer"
+          format: int32
+    HashedKeys:
+      type: "object"
+      properties:
+        hashedKeys:
+          type: "array"
+          items:
+            type: string
+    JobStart:
+      type: "object"
+      properties:
+        jobId:
+          type: string
+        txStatus:
+          type: string
+          description: "Transaction Status"
+          enum:
+          - "pending"
+          - "complete"
+          - "error"
+    Job:
+      type: "object"
+      properties:
+        jobId:
+          type: string
+        ttlTimestamp:
+          type: integer
+          format: int64
+        txTimestamp:
+          type: integer
+          format: int64
+        txResult:
+          type: object
+          additionalProperties: {}
+        user:
+          type: object
+          properties:
+            company:
+              type: string
+            email:
+              type: string
+            id:
+              type: string
+            phone:
+              type: string
+        txStatus:
+          type: string
+          description: "Transaction Status"
+          enum:
+          - "pending"
+          - "complete"
+          - "error"
+    KeyResult:
+      type: "object"
+      properties:
+        count:
+          type: "integer"
+          format: int32
+        keys:
+          type: "array"
+          items:
+            type: "string"
+externalDocs:
+  description: "Find out more about Swagger"
+  url: "http://swagger.io"

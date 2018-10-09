@@ -2,16 +2,15 @@
 
 const utils = require("../lib/utils")
 const electionData = require("./lib/election")
-const Joi = require('joi');
-
-const jwtSchema = Joi.object().keys({
-  publicKey: Joi.string().required()
-})
+const ursa = require('ursa')
 
 module.exports.set = async (event, context) => {
 
   try {
-    let params = await utils.validate(event.body, jwtSchema);
+    let pem = event.body;
+
+    //will throw error if not pem
+    ursa.coercePublicKey(pem);
 
     const user = utils.getUser(event);
     const electionId = event.pathParameters.id;
@@ -26,9 +25,9 @@ module.exports.set = async (event, context) => {
       return utils.error(409, "election is using netvote key auth, public key cannot be overridden");
     }
 
-    await electionData.savePublicJwtKey(electionId, params.publicKey);
+    await electionData.savePublicJwtKey(electionId, pem);
 
-    return utils.success({status: "complete"});
+    return utils.success({txStatus: "complete"});
 
   } catch (e) {
     return utils.error(400, e.message)

@@ -85,7 +85,7 @@ const savePublicJwtKey = async (electionId, key) => {
     let obj = {
         electionId: electionId,
         keyType: "jwt-public",
-        value: key,
+        value: key.toString("base64"),
         encrypted: false,
         txTimestamp: new Date().getTime()
     }
