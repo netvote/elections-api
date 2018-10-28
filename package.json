@@ -19,6 +19,7 @@
     "@netvote/elections-tally": "^0.2.10",
     "ipfs-mini": "^1.1.2",
     "joi": "^13.7.0",
+    "markdown-swagger": "^1.0.4",
     "njwt": "^0.4.0",
     "node-jose": "^1.0.0",
     "protobufjs": "^6.8.8",
