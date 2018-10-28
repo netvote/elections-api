@@ -26,13 +26,13 @@ Authorization: Basic dGVzdGlkOnRlc3RzZWNyZXQK
  ------------------------------------ | ------ | ----- | ---------------------------------------------------------------------------------------------------------------------------------------------
  `/admin/election`                    | POST   | Yes   | Create a new election and deploy as a smart contract                                                                                         
  `/admin/election/{id}/status`        | POST   | Yes   | This will transition the election to the specified state.                                                                                    
- `/admin/election/{id}/jwt`           | POST   | Yes   |                                                                                                                                              
+ `/admin/election/{id}/jwt`           | POST   | Yes   | Set public JWT Key for voter authentication                                                                                                  
  `/admin/election/{id}/keys`          | POST   | Yes   | If count is populated, will generate and return those keys.  Otherwise, will upload base64-encoded sha256 keys found in the hashedKeys array.
  `/admin/job/{id}`                    | GET    | Yes   | Only the admin who created the job may retrieve job status                                                                                   
  `/admin/election/{id}/votes`         | GET    | Yes   | Returns each unique vote (updates are separate entries)                                                                                      
  `/public/election/{id}`              | GET    | No    | Anyone may retrieve basic election information                                                                                               
  `/public/election/{id}/results`      | GET    | No    |                                                                                                                                              
- `/public/job/{id}`                   | GET    | No    |                                                                                                                                              
+ `/public/job/{id}`                   | GET    | No    | Retrieves status or result of a Vote or Tally async Job                                                                                      
  `/voter/election/{id}/auth/{format}` | POST   | Yes   | If format is QR, will additionally return JWT inside of a data-type URL for HTML display                                                     
- `/voter/election/{id}/vote`          | POST   | Yes   |                                                                                                                                              
+ `/voter/election/{id}/vote`          | POST   | Yes   | Casts a vote                                                                                                                                 
 <!-- /markdown-swagger -->

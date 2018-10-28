@@ -77,7 +77,7 @@ paths:
   /admin/election/{id}/jwt:
     post:
       summary: "Set public JWT Key for voter authentication"
-      description: ""
+      description: "Set public JWT Key for voter authentication"
       operationId: "setPublicJwt"
       security:
       - basicAuth: []
@@ -228,6 +228,7 @@ paths:
   /public/election/{id}/results:
     get:
       summary: "Starts an asynchronous Tally execution"
+      descriptions: "Starts an asynchronous Tally execution"
       operationId: "getPublicResults"
       tags:
         - Election Public Data
@@ -252,7 +253,7 @@ paths:
   /public/job/{id}:
     get:
       summary: "Retrieves status or result of a Vote or Tally async Job"
-      description: ""
+      description: "Retrieves status or result of a Vote or Tally async Job"
       operationId: "getPublicJob"
       tags:
         - Election Public Data
@@ -313,7 +314,7 @@ paths:
   /voter/election/{id}/vote:
     post:
       summary: "Casts a vote"
-      description: ""
+      description: "Casts a vote"
       operationId: "castVote"
       security:
       - bearerAuth: []
