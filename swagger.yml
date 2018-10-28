@@ -365,27 +365,39 @@ components:
         autoActivate:
           type: "boolean"
           default: false
+          description: "If true, allow voting immediately after creation"
         continuousReveal:
           type: "boolean"
           default: false
+          description: "If true, tally can occur during the election rather than at end"
         requireProof:
           type: "boolean"
           default: false
+          description: "If true, API will validate proofs"
         netvoteKeyAuth:
           type: "boolean"
           default: false
+          description: "If true, API will allow creation of Voter Keys"
         allowUpdates:
           type: "boolean"
           default: false
+          description: "If true, voters may update their vote any time before election closes"
         closeAfter:
           type: "integer"
           format: int64
+          description: "Time (epoch milliseconds) when closing is possible"
         voteStartTime:
           type: "integer"
           format: int64
+          description: "Time (epoch milliseconds) when votes are allowed (if election is active)"
         voteEndTime:
           type: "integer"
           format: int64
+          description: "Time (epoch milliseconds) when votes are no longer allowed"
+        test:
+          type: "boolean"
+          default: false
+          description: "If true, this election is free, only 100 votes are allowed, and may be deleted by the system."
         network:
           type: "string"
           description: "Network for Deployment"

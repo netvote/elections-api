@@ -4,15 +4,24 @@ Netvote API
 
 **Version:** 1.0.0
 
-**Terms of service:**  
-https://netvote.io/terms/
-
-**Contact information:**  
-steven@netvote.io  
-
 **License:** [GPL 3.0](https://www.gnu.org/licenses/gpl-3.0.en.html)
 
 [Find out more about Swagger](http://swagger.io)
+
+### Authentication
+
+There are two required headers:
+
+```
+x-api-key: APIKEY
+Authorization: Basic base64(ID:SECRET)
+```
+For example, for values APKEY=abc123, ID=testid, and SECRET=testsecret, the headers are:
+```
+x-api-key: abc123
+Authorization: Basic dGVzdGlkOnRlc3RzZWNyZXQK
+```
+
 ### /admin/election
 ---
 ##### ***POST***
