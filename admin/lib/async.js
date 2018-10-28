@@ -42,7 +42,7 @@ const startJob = async (name, payload, user) => {
 
     payload = payload || {};
 
-    let jobId =  `${user.id}-${uuid()}`;
+    let jobId =  uuid();
     payload.jobId = jobId;
     payload.user = user;
 

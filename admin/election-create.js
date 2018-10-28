@@ -13,6 +13,7 @@ const createElectionSchema = Joi.object().keys({
   allowUpdates: Joi.boolean().default(false),
   closeAfter: Joi.date().default(new Date().getTime()),
   voteStartTime: Joi.date().default(new Date().getTime()),
+  test: Joi.boolean().default(false),
   voteEndTime: Joi.date().default(0),
   network: Joi.string().only("netvote", "ropsten", "mainnet").required()
 })
@@ -44,6 +45,7 @@ module.exports.create = async (event, context) => {
           voteStartTime: params.voteStartTime,
           voteEndTime: params.voteEndTime,
           isDemo: false, 
+          test: params.test,
           uid: user.id
       }
     }
