@@ -31,6 +31,10 @@ module.exports.create = async (event, context) => {
       }
     }
 
+    if(params.voteEndTime && params.voteEndTime < (new Date().getTime())){
+      return utils.error(400, "voteEndTime is in the past.  Value should be in epoch milliseconds.")
+    }
+
     let payload = {
       network: params.network,
       election: {
