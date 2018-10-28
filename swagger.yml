@@ -228,7 +228,7 @@ paths:
   /public/election/{id}/results:
     get:
       summary: "Starts an asynchronous Tally execution"
-      descriptions: "Starts an asynchronous Tally execution"
+      description: "Starts an asynchronous Tally execution"
       operationId: "getPublicResults"
       tags:
         - Election Public Data
