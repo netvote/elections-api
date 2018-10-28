@@ -2,17 +2,44 @@
 const nvEncrypt = require('../../lib/encryption')
 let protobuf = require("protobufjs");
 let IPFS = require('ipfs-mini');
-ipfs = new IPFS({ host: 'ipfs.netvote.io', port: 443, protocol: 'https' });
-
 let VoteProto;
 
 Array.prototype.pushArray = function (arr) {
     this.push.apply(this, arr);
 };
 
-const getFromIPFS = (location) => {
+
+const getIpfsClient = (ipfsUrl) => {
+    return  new IPFS({ host: ipfsUrl, port: 443, protocol: 'https' });
+}
+
+let IPFS_URL_LIST = ["ipfs.netvote.io", "ipfs.infura.io"];
+
+let getFromIPFS = async (location) => {
+    let retries = 2;
+    for(let i=0; i<retries; i++){
+        for(let u = 0; u<IPFS_URL_LIST.length; u++){
+            try{
+                let ipfs = getIpfsClient(IPFS_URL_LIST[u])
+                return await getFromIPFSUnsafe(ipfs, location);
+            } catch (e) {
+                //already logged, try again
+            }
+        }
+    }
+    throw new Error("Error trying to access ipfs: "+location)
+}
+
+const getFromIPFSUnsafe = (ipfsObj, location) => {
     return new Promise((resolve, reject) => {
-        ipfs.catJSON(location, (err, obj) => {
+        let completed = false;
+        setTimeout(function(){
+            if(!completed){
+                reject(new Error("IPFS timeout"));
+            }
+        }, 5000);
+        ipfsObj.catJSON(location, (err, obj) => {
+            completed = true;
             if (err) {
                 console.error(err);
                 reject(err);
