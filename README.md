@@ -213,6 +213,9 @@ For example, for values APKEY=abc123, ID=testid, and SECRET=testsecret, the head
 x-api-key: abc123
 Authorization: Basic dGVzdGlkOnRlc3RzZWNyZXQK
 ```
+
+[Click here for our Swagger UI](https://swagger.netvote.io)
+
 <!-- markdown-swagger -->
  Endpoint                             | Method | Auth? | Description                                                                                                                                  
  ------------------------------------ | ------ | ----- | ---------------------------------------------------------------------------------------------------------------------------------------------
@@ -223,8 +226,10 @@ Authorization: Basic dGVzdGlkOnRlc3RzZWNyZXQK
  `/admin/job/{id}`                    | GET    | Yes   | Only the admin who created the job may retrieve job status                                                                                   
  `/admin/election/{id}/votes`         | GET    | Yes   | Returns each unique vote (updates are separate entries)                                                                                      
  `/public/election/{id}`              | GET    | No    | Anyone may retrieve basic election information                                                                                               
- `/public/election/{id}/results`      | GET    | No    |                                                                                                                                              
+ `/public/election/{id}/results`      | GET    | No    | Starts an asynchronous Tally execution                                                                                                       
  `/public/job/{id}`                   | GET    | No    | Retrieves status or result of a Vote or Tally async Job                                                                                      
  `/voter/election/{id}/auth/{format}` | POST   | Yes   | If format is QR, will additionally return JWT inside of a data-type URL for HTML display                                                     
  `/voter/election/{id}/vote`          | POST   | Yes   | Casts a vote                                                                                                                                 
+ `/ipfs`                              | POST   | Yes   | Save an object to IPFS                                                                                                                       
+ `/ipfs/{hash}`                       | GET    | Yes   | Get an object from IPFS                                                                                                                      
 <!-- /markdown-swagger -->
