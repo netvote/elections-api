@@ -8,9 +8,10 @@ Netvote API
 
 [Click here for our Swagger UI](https://swagger.netvote.io)
 
-[NPM Package](#npm-package)
 [Admin SDK](#admin-sdk)
+
 [Public SDK](#public-sdk)
+
 [Rest API](#rest-api)
 
 ## NPM Package

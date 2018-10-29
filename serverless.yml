@@ -159,6 +159,12 @@ functions:
           private: true
           cors: true
 
+  voteUsage:
+    handler: billing/usage-stream.voteUpdate
+    role: usageWriterRole
+    events:
+      - stream: arn:aws:dynamodb:us-east-1:891335278704:table/votes/stream/2018-10-20T14:34:02.097
+
 resources:
   Resources:
     adminApiRole:
@@ -581,3 +587,60 @@ resources:
                       - "s3:GetObject"
                     Resource: "arn:aws:s3:::netvote-ipfs/*"     
                     
+    usageWriterRole:
+      Type: AWS::IAM::Role
+      Properties:
+        Path: /usage/writer/
+        RoleName: usageWriterRole_${self:provider.stage}
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action: sts:AssumeRole
+        Policies:
+          - PolicyName: usageWriterPolicy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                  - Effect: Allow
+                    Action:
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
+                    Resource:
+                    - 'Fn::Join':
+                      - ':'
+                      -
+                        - 'arn:aws:logs'
+                        - Ref: 'AWS::Region'
+                        - Ref: 'AWS::AccountId'
+                        - 'log-group:/aws/lambda/*:*:*'
+                  - Effect: "Allow"
+                    Action:
+                      - "s3:PutObject"
+                    Resource:
+                      Fn::Join:
+                        - ""
+                        - - "arn:aws:s3:::"
+                          - "Ref" : "ServerlessDeploymentBucket"
+                  - Effect: Allow
+                    Action:
+                      - "dynamodb:DescribeStream"
+                      - "dynamodb:GetRecords"
+                      - "dynamodb:GetShardIterator"
+                      - "dynamodb:ListStreams"
+                      - "logs:CreateLogGroup"
+                      - "logs:CreateLogStream"
+                      - "logs:PutLogEvents"
+                    Resource: "*"
+                  - Effect: Allow
+                    Action:
+                      - dynamodb:GetItem
+                    Resource: "arn:aws:dynamodb:us-east-1:891335278704:table/elections"
+                  - Effect: Allow
+                    Action:
+                      - dynamodb:PutItem
+                    Resource: "arn:aws:dynamodb:us-east-1:891335278704:table/nvUsage"
