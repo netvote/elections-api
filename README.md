@@ -2,7 +2,7 @@ Netvote API
 ===========
 Netvote API
 
-**Version:** 1.0.0
+**Version:** 1.0.1
 
 **License:** [GPL 3.0](https://www.gnu.org/licenses/gpl-3.0.en.html)
 
@@ -28,69 +28,67 @@ const nv = netvoteApis.initAdminClient(
 ### Create Election
 ```
 let metadata = await nv.SaveToIPFS({
-  "type": "basic",
-  "ballotTitle": "Netvote Demo Election",
-  "ballotLocation": "NYC",
-  "ballotDate": "",
-  "ballotImage": "",
-  "featuredImage": "https://netvote.io/wp-content/uploads/2018/03/roswell-ga.jpg",
-  "description": "This is a demo election on the Netvote platform",
-  "ballotInformation": "Some information",
-  "ballotGroups": [
-    {
-      "groupTitle": "State Election",
-      "ballotSections": [
-        {
-          "sectionTitle": "Governor",
-          "sectionTitleNote": "Choose one",
-          "ballotItems": [
-            {
-              "itemTitle": "John Smith",
-              "itemDescription": "Democratic Party"
-            },
-            {
-              "itemTitle": "Sally Gutierrez",
-              "itemDescription": "Republican Party (incumbent)"
-            },
-            {
-              "itemTitle": "Tyrone Williams",
-              "itemDescription": "Independent"
-            }
-          ]
-        },
-        {
-          "sectionTitle": "Proposition 33",
-          "sectionTitleNote": "Do you support Proposition 33?",
-          "ballotItems": [
-            {
-              "itemTitle": "Yes"
-            },
-            {
-              "itemTitle": "No"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "groupTitle": "County Election",
-      "ballotSections": [
-        {
-          "sectionTitle": "Tax Commissioner",
-          "sectionTitleNote": "Choose one",
-          "ballotItems": [
-            {
-              "itemTitle": "Doug Hall",
-              "itemDescription": "(incumbent)"
-            },
-            {
-              "itemTitle": "Emily Washington"
-            }
-          ]
-        }
-      ]
-    }
-  ]
+	"type": "basic",
+	"ballotTitle": "2020 Election",
+	"ballotLocation": "NYC",
+	"ballotDate": "",
+	"ballotImage": "",
+	"featuredImage": "https://netvote.io/wp-content/uploads/2018/03/roswell-ga.jpg",
+	"ballotInformation": "Some information",
+	"ballotGroups": [{
+		"groupTitle": "Decision Types",
+		"ballotSections": [{
+			"type": "multiple",
+			"maxSelect": 2,
+			"minSelect": 1,
+			"sectionTitle": "Governor",
+			"sectionTitleNote": "Choose 1 or 2 choices",
+			"ballotItems": [{
+				"itemTitle": "John Smith",
+				"itemDescription": "Democratic Party"
+			}, {
+				"itemTitle": "Sally Gutierrez",
+				"itemDescription": "Republican Party (incumbent)"
+			}, {
+				"itemTitle": "Tyrone Williams",
+				"itemDescription": "Independent"
+			}]
+		}, {
+			"type": "single",
+			"sectionTitle": "Proposition 33",
+			"sectionTitleNote": "Do you support Proposition 33?",
+			"ballotItems": [{
+				"itemTitle": "Yes"
+			}, {
+				"itemTitle": "No"
+			}]
+		}, {
+			"type": "ranked",
+			"sectionTitle": "Favorite Color",
+			"sectionTitleNote": "Choose your favorite color (1 is highest)",
+			"ballotItems": [{
+				"itemTitle": "Red"
+			}, {
+				"itemTitle": "Green"
+			}, {
+				"itemTitle": "Blue"
+			}]
+		}]
+	}, {
+		"groupTitle": "Points Election",
+		"ballotSections": [{
+			"type": "points",
+			"totalPoints": 9,
+			"sectionTitle": "Tax Commissioner",
+			"sectionTitleNote": "Allocate Points",
+			"ballotItems": [{
+				"itemTitle": "Doug Hall",
+				"itemDescription": "(incumbent)"
+			}, {
+				"itemTitle": "Emily Washington"
+			}]
+		}]
+	}]
 });
 
 let job = await nv.CreateElection({
@@ -148,9 +146,18 @@ const publicNv = netvoteApis.initVoterClient(
 ```
 ###  Get Anonymous Voter Auth Token
 ```
-// voterToken distributed via string or QR
+// voterToken distributed via string
 let tokenReponse = await publicNv.GetJwtToken(electionId, voterKey)
 let token = tokenResponse.token;
+```
+
+###  Get Anonymous Voter Auth Token QR
+```
+// voterToken distributed via string or QR
+let tokenReponse = await publicNv.GetJwtTokenQR(electionId, voterKey)
+
+// token qr is data URL object with {electionId: electionId, token: jwtToken}
+document.getElementById("yourimage").src = tokenReponse.qr;
 ```
 
 ### Cast Vote
@@ -160,13 +167,22 @@ let voteObject = {
         {
             choices: [
                 {
-                    selection: 0
+                    indexSelections: {
+                        indexes: [0, 1]     // select first and second choice
+                    }
                 },
                 {
-                    selection: 1
+                    selection: 1            // select the second choice
                 },
                 {
-                    selection: 1
+                    pointsAllocations: {
+                        points: [1,2,3]     // these are ranks, where 1 is highest
+                    }
+                },
+                {
+                    pointsAllocations: {
+                        points: [3,6]       // these are points, more is higher
+                    }
                 }
             ]
         }
