@@ -16,8 +16,12 @@ npm install @netvote/netvote-api-sdk
 
 ## Admin SDK
 
+**Note: Admin SDK is meant for server-deployment only.  Do not place keys in the browser** 
+
 ###  Initialize Admin Client
 ```
+const netvoteApis = require("@netvote/netvote-api-sdk")
+
 const nv = netvoteApis.initAdminClient(
     process.env.NETVOTE_API_KEY, 
     process.env.NETVOTE_API_ID, 
@@ -137,6 +141,8 @@ await nv.CloseElection(electionId);
 
 ###  Initialize Admin Client
 ```
+const netvoteApis = require("@netvote/netvote-api-sdk")
+
 const publicNv = netvoteApis.initVoterClient(
     process.env.NETVOTE_API_KEY, 
 )
