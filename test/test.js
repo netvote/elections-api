@@ -10,7 +10,10 @@ const nv = netvoteApis.initAdminClient(
     'dev'
 )
 
-const publicNv = netvoteApis.initVoterClient('dev')
+const publicNv = netvoteApis.initVoterClient(
+    process.env.NETVOTE_API_KEY, 
+    'dev'
+)
 
 const sha256Hash = (str) => {
     let hash = crypto.createHash("sha256")
@@ -29,6 +32,18 @@ const assertElectionValues = async (electionId, keyVals) => {
         assert.equal(el[name], expected, `expected ${name} == ${expected}, but was ${el[name]}`);
     })
 }
+
+describe(`IPFS API`, function() {
+
+    it('should save and get file', async()=>{
+        let res = await publicNv.SaveToIPFS({
+            test: true
+        })
+        let obj = await publicNv.GetFromIPFS(res.hash);
+        assert.equal(obj.test, true, "should be same object")
+    });
+
+})
 
 describe(`End to End Election`, function() {
 

@@ -43,8 +43,18 @@ const checkReady = () =>{
   }
 }
 
+const required = (name, value) => {
+  if(!value){
+    throw new Error(`${name} is a required field`);
+  }
+}
+
 module.exports = {
   Init: async(params) => {
+    required("id", params.id);
+    required("secret", params.secret);
+    required("apiKey", params.apiKey);
+    required("baseUrl", params.baseUrl);
     ID = params.id;
     SECRET = params.secret;
     API_KEY = params.apiKey;

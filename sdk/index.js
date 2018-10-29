@@ -1,7 +1,8 @@
-const initVoterClient = (version) => {
+const initVoterClient = (apiKey, version) => {
     let v = version || "v1";
     const publicNv = require("./netvote-public-apis");
     publicNv.Init({
+        apiKey: apiKey,
         baseUrl: `https://elections.netvote.io/${v}`
     })
     return publicNv;

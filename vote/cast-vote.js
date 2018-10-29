@@ -52,6 +52,7 @@ module.exports.cast = async (event, context) => {
     try{
         await voteUtils.validateVote(el, vote);
     } catch(e) {
+        console.error(e);
         console.error({electionId: electionId, message: "invalid vote", error: e.message});
         return utils.error(400, e.message);
     }

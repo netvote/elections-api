@@ -1,63 +1,11 @@
 
 const nvEncrypt = require('../../lib/encryption')
+let ipfs = require('../../lib/ipfs')
 let protobuf = require("protobufjs");
-let IPFS = require('ipfs-mini');
 let VoteProto;
 
 Array.prototype.pushArray = function (arr) {
     this.push.apply(this, arr);
-};
-
-
-const getIpfsClient = (ipfsUrl) => {
-    return  new IPFS({ host: ipfsUrl, port: 443, protocol: 'https' });
-}
-
-let IPFS_URL_LIST = ["ipfs.netvote.io", "ipfs.infura.io"];
-
-let getFromIPFS = async (location) => {
-    let retries = 2;
-    for(let i=0; i<retries; i++){
-        for(let u = 0; u<IPFS_URL_LIST.length; u++){
-            try{
-                let ipfs = getIpfsClient(IPFS_URL_LIST[u])
-                return await getFromIPFSUnsafe(ipfs, location);
-            } catch (e) {
-                //already logged, try again
-            }
-        }
-    }
-    throw new Error("Error trying to access ipfs: "+location)
-}
-
-const getFromIPFSUnsafe = (ipfsObj, location) => {
-    return new Promise((resolve, reject) => {
-        let completed = false;
-        setTimeout(function(){
-            if(!completed){
-                reject(new Error("IPFS timeout"));
-            }
-        }, 5000);
-        ipfsObj.catJSON(location, (err, obj) => {
-            completed = true;
-            if (err) {
-                console.error(err);
-                reject(err);
-            }
-            resolve(obj)
-        });
-    })
-}
-
-const ipfsLookup = async (metadataLocation) => {
-    let metadata = await getFromIPFS(metadataLocation);
-    let decisions = [];
-    metadata.ballotGroups.forEach((bg) => {
-        decisions.pushArray(bg.ballotSections);
-    });
-    return {
-        decisions: decisions
-    }
 };
 
 const voteProto = async () => {
@@ -82,6 +30,18 @@ const encodeVote = async (voteObj) => {
     let res = vp.create(voteObj);
     return vp.encode(res).finish();
 }
+
+
+const ipfsLookup = async (metadataLocation) => {
+    let metadata = await ipfs.getJson(metadataLocation);
+    let decisions = [];
+    metadata.ballotGroups.forEach((bg) => {
+        decisions.pushArray(bg.ballotSections);
+    });
+    return {
+        decisions: decisions
+    }
+};
 
 
 // NOTE: these validate functions are copied from the tally API
@@ -222,7 +182,7 @@ const validateProof = async (voteBase64, proof) => {
     if(!proof){
         throw new Error("proof is required")
     }
-    const proofObj = await getFromIPFS(proof);
+    const proofObj = await ipfs.getJson(proof);
     if(!proofObj.signature){
         throw new Error("signature is not specified in IPFS proof")
     }
