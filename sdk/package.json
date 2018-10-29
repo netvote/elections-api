@@ -1,5 +1,5 @@
 {
-  "name": "netvote-api-sdk",
+  "name": "@netvote/netvote-api-sdk",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",

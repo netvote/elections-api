@@ -8,6 +8,123 @@ Netvote API
 
 [Find out more about Swagger](http://swagger.io)
 
+## NPM Package
+
+```
+npm install @netvote/netvote-api-sdk
+```
+
+## Admin SDK
+
+###  Initialize Admin Client
+```
+const nv = netvoteApis.initAdminClient(
+    process.env.NETVOTE_API_KEY, 
+    process.env.NETVOTE_API_ID, 
+    process.env.NETVOTE_API_SECRET, 
+)
+```
+
+## Create an Election
+```
+let metadata = await nv.SaveToIPFS({
+  "type": "basic",
+  "ballotTitle": "Netvote Demo Election",
+  "ballotLocation": "NYC",
+  "ballotDate": "",
+  "ballotImage": "",
+  "featuredImage": "https://netvote.io/wp-content/uploads/2018/03/roswell-ga.jpg",
+  "description": "This is a demo election on the Netvote platform",
+  "ballotInformation": "Some information",
+  "ballotGroups": [
+    {
+      "groupTitle": "State Election",
+      "ballotSections": [
+        {
+          "sectionTitle": "Governor",
+          "sectionTitleNote": "Choose one",
+          "ballotItems": [
+            {
+              "itemTitle": "John Smith",
+              "itemDescription": "Democratic Party"
+            },
+            {
+              "itemTitle": "Sally Gutierrez",
+              "itemDescription": "Republican Party (incumbent)"
+            },
+            {
+              "itemTitle": "Tyrone Williams",
+              "itemDescription": "Independent"
+            }
+          ]
+        },
+        {
+          "sectionTitle": "Proposition 33",
+          "sectionTitleNote": "Do you support Proposition 33?",
+          "ballotItems": [
+            {
+              "itemTitle": "Yes"
+            },
+            {
+              "itemTitle": "No"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "groupTitle": "County Election",
+      "ballotSections": [
+        {
+          "sectionTitle": "Tax Commissioner",
+          "sectionTitleNote": "Choose one",
+          "ballotItems": [
+            {
+              "itemTitle": "Doug Hall",
+              "itemDescription": "(incumbent)"
+            },
+            {
+              "itemTitle": "Emily Washington"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+});
+
+let job = await nv.CreateElection({
+    autoActivate: false,
+    continuousReveal: false,
+    metadataLocation: metadata.hash,
+    allowUpdates: true,
+    netvoteKeyAuth: true,
+    network: "netvote"
+});
+
+let finished = await nv.PollJob(job.jobId, 60000);
+
+let electionId = finished.txResult.electionId;
+```
+### Activate Election
+```
+await nv.ActivateElection(electionId);
+```
+### Stop Election
+```
+await nv.StopElection(electionId);
+```
+### Resume Election
+```
+await nv.ActivateElection(electionId);
+```
+### Close Election
+```
+await nv.CloseElection(electionId);
+```
+
+## REST API 
+
 ### Authentication
 
 There are two required headers:

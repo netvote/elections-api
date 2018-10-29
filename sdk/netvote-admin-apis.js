@@ -69,6 +69,18 @@ module.exports = {
     checkReady();
     return await netvotePost(`/admin/election/${id}/keys`, obj)
   },
+  ActivateElection: async(id) => {
+    checkReady();
+    return await netvotePost(`/admin/election/${id}/status`, { status: "voting"})
+  },
+  StopElection: async(id) => {
+    checkReady();
+    return await netvotePost(`/admin/election/${id}/status`, { status: "stopped"})
+  },
+  CloseElection: async(id) => {
+    checkReady();
+    return await netvotePost(`/admin/election/${id}/status`, { status: "closed"})
+  },
   SetElectionStatus: async(id, obj) => {
     checkReady();
     return await netvotePost(`/admin/election/${id}/status`, obj)
