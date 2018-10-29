@@ -25,7 +25,7 @@ const nv = netvoteApis.initAdminClient(
 )
 ```
 
-## Create an Election
+### Create Election
 ```
 let metadata = await nv.SaveToIPFS({
   "type": "basic",
@@ -107,6 +107,24 @@ let finished = await nv.PollJob(job.jobId, 60000);
 
 let electionId = finished.txResult.electionId;
 ```
+### Create a Voter Key
+```
+// example logic for producing a list of base64(sha256(key)) values
+const sha256Hash = (str) => {
+    let hash = crypto.createHash("sha256")
+    hash.update(str);
+    return hash.digest().toString("base64");
+}
+
+// hash key
+let voterKey = "secretKey"
+let hashedKey = sha256Hash(k)
+
+let res = await nv.AddVoterKeys(electionId, {hashedKeys: [hashedKey]});
+
+console.log(res.count) // 1 
+```
+
 ### Activate / Resume Election
 ```
 await nv.ActivateElection(electionId);
@@ -131,7 +149,7 @@ const publicNv = netvoteApis.initVoterClient(
 ###  Get Anonymous Voter Auth Token
 ```
 // voterToken distributed via string or QR
-let tokenReponse = await publicNv.GetJwtToken(electionId, voterToken)
+let tokenReponse = await publicNv.GetJwtToken(electionId, voterKey)
 let token = tokenResponse.token;
 ```
 
