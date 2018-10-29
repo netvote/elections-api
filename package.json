@@ -7,7 +7,8 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "./node_modules/mocha/bin/mocha"
+    "test": "./node_modules/mocha/bin/mocha",
+    "testprod": "env NETVOTE_API_VERSION=v1 ./node_modules/mocha/bin/mocha"
   },
   "author": "",
   "license": "ISC",

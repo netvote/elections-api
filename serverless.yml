@@ -9,6 +9,7 @@ provider:
   region: ${opt:region, 'us-east-1'}
   appClientId: 6d5bgvo3j82eli47c36c00sreb
   userPoolId: us-east-1_XGFVRW86R
+  adminUserPoolId: us-east-1_nPRrxrfY7
 
 functions:
   adminAuthorizer:
@@ -164,6 +165,18 @@ functions:
     role: usageWriterRole
     events:
       - stream: arn:aws:dynamodb:us-east-1:891335278704:table/votes/stream/2018-10-20T14:34:02.097
+
+  usageSearch:
+    handler: billing/usage-api.search
+    role: usageReaderRole
+    events:
+      - http:
+          path: usage
+          method: get
+          cors: true
+          authorizer:
+            name: authorizer
+            arn: arn:aws:cognito-idp:us-east-1:891335278704:userpool/us-east-1_nPRrxrfY7
 
 resources:
   Resources:
@@ -643,4 +656,52 @@ resources:
                   - Effect: Allow
                     Action:
                       - dynamodb:PutItem
+                    Resource: "arn:aws:dynamodb:us-east-1:891335278704:table/nvUsage"
+
+    usageReaderRole:
+      Type: AWS::IAM::Role
+      Properties:
+        Path: /usage/reader/
+        RoleName: usageReaderPolicy_${self:provider.stage}
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action: sts:AssumeRole
+        Policies:
+          - PolicyName: usageReaderPolicy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                  - Effect: Allow
+                    Action:
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
+                    Resource:
+                    - 'Fn::Join':
+                      - ':'
+                      -
+                        - 'arn:aws:logs'
+                        - Ref: 'AWS::Region'
+                        - Ref: 'AWS::AccountId'
+                        - 'log-group:/aws/lambda/*:*:*'
+                  - Effect: "Allow"
+                    Action:
+                      - "s3:PutObject"
+                    Resource:
+                      Fn::Join:
+                        - ""
+                        - - "arn:aws:s3:::"
+                          - "Ref" : "ServerlessDeploymentBucket"
+                  - Effect: Allow
+                    Action:
+                      - dynamodb:GetItem
+                    Resource: "arn:aws:dynamodb:us-east-1:891335278704:table/elections"
+                  - Effect: Allow
+                    Action:
+                      - dynamodb:Query
                     Resource: "arn:aws:dynamodb:us-east-1:891335278704:table/nvUsage"

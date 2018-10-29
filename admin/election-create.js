@@ -11,10 +11,10 @@ const createElectionSchema = Joi.object().keys({
   requireProof: Joi.boolean().default(true),
   netvoteKeyAuth: Joi.boolean().default(false),
   allowUpdates: Joi.boolean().default(false),
-  closeAfter: Joi.date().default(new Date().getTime()),
-  voteStartTime: Joi.date().default(new Date().getTime()),
+  closeAfter: Joi.number().default(new Date().getTime()),
+  voteStartTime: Joi.number().default(new Date().getTime()),
   test: Joi.boolean().default(false),
-  voteEndTime: Joi.date().default(0),
+  voteEndTime: Joi.number().default(0),
   network: Joi.string().only("netvote", "ropsten", "mainnet").required()
 })
 
