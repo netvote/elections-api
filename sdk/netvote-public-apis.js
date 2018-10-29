@@ -95,7 +95,11 @@ module.exports = {
   GetFromIPFS: async(hash) => {
     checkReady();
     let res = await netvoteGet(`/ipfs/${hash}`)
-    return JSON.parse(res);
+    try{
+      return JSON.parse(res);
+    } catch(e){
+      return res;
+    }
   },
   SaveToIPFS: async(obj) => {
     checkReady();
