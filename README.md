@@ -109,7 +109,7 @@ let electionId = finished.txResult.electionId;
 ```
 ### Create a Voter Key
 ```
-// example logic for producing a list of base64(sha256(key)) values
+// example logic for base64(sha256(key)) 
 const sha256Hash = (str) => {
     let hash = crypto.createHash("sha256")
     hash.update(str);
