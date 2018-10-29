@@ -16,7 +16,7 @@ npm install @netvote/netvote-api-sdk
 
 ## Admin SDK
 
-**Note: Admin SDK is meant for server-deployment only.  Do not place keys in the browser** 
+**Note: Admin SDK is meant for server-deployment only.  Do not place ID or Secret in the browser** 
 
 ###  Initialize Admin Client
 ```
@@ -138,6 +138,8 @@ await nv.CloseElection(electionId);
 ```
 
 ## Public/Voter SDK
+
+This can be initialized in a browser using a stack like [Browserify](http://browserify.org/) 
 
 ###  Initialize Admin Client
 ```
