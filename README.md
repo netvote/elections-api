@@ -8,6 +8,11 @@ Netvote API
 
 [Click here for our Swagger UI](https://swagger.netvote.io)
 
+[NPM Package](#npm-package)
+[Admin SDK](#admin-sdk)
+[Public SDK](#public-sdk)
+[Rest API](#rest-api)
+
 ## NPM Package
 
 ```
@@ -137,7 +142,7 @@ await nv.StopElection(electionId);
 await nv.CloseElection(electionId);
 ```
 
-## Public/Voter SDK
+## Public SDK
 
 This can be initialized in a browser using a stack like [Browserify](http://browserify.org/) 
 
@@ -221,6 +226,8 @@ For example, for values APKEY=abc123, ID=testid, and SECRET=testsecret, the head
 x-api-key: abc123
 Authorization: Basic dGVzdGlkOnRlc3RzZWNyZXQK
 ```
+
+### Endpoints
 
 [Click here for our Swagger UI](https://swagger.netvote.io)
 
