@@ -1,25 +1,8 @@
 const ursa = require("ursa");
 const protobuf = require("protobufjs");
-const IPFS = require('ipfs-mini');
 const uuid = require('uuid/v4');
-var fs = require('fs');
-
 
 let Vote;
-
-const ipfs = new IPFS({ host: 'ipfs.netvote.io', protocol: 'https', port: 8443 });
-
-const saveToIPFS = (data) => {
-    return new Promise((resolve, reject) => {
-        ipfs.add(JSON.stringify(data), (err, result) => {
-            if(err){
-                    reject(err)
-            }else{
-                    resolve(result)
-            }
-        });
-    })
-}
 
 const initProto = async () => {
     if(!Vote){
@@ -37,7 +20,7 @@ const signVote = async (voteBase64) => {
         signature: sig,
         publicKey: pub
     }
-    return await saveToIPFS(obj);
+    return obj;
 }
 
 const encodeVote = async (payload, signatures) => {

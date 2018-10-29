@@ -81,10 +81,11 @@ module.exports = {
     checkReady();
     let voteBase64 = await nvEncoder.encodeVote(voteObject, true);
     let proof = await nvEncoder.signVote(voteBase64);
+    let ipfsResponse = await netvotePost(`/ipfs`, proof);
 
     let payload = {
       vote: voteBase64,
-      proof: proof
+      proof: ipfsResponse.hash
     }
     let headers = {
       "Authorization": `Bearer ${token}`
@@ -98,7 +99,7 @@ module.exports = {
   },
   SaveToIPFS: async(obj) => {
     checkReady();
-    return await netvotePost(`/ipfs`, obj)
+    return await netvotePost(`/ipfs`, JSON.stringify(obj))
   },
   GetResults: async(electionId) => {
     checkReady();

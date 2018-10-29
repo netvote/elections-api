@@ -77,6 +77,15 @@ module.exports = {
     checkReady();
     return await netvoteGet(`/admin/job/${jobId}`)
   },
+  GetFromIPFS: async(hash) => {
+    checkReady();
+    let res = await netvoteGet(`/ipfs/${hash}`)
+    return JSON.parse(res);
+  },
+  SaveToIPFS: async(obj) => {
+    checkReady();
+    return await netvotePost(`/ipfs`, obj)
+  },
   GetVoteTransactions: async(id) => {
     checkReady();
     return await netvoteGet(`/admin/election/${id}/votes`)
