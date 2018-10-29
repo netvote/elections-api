@@ -173,7 +173,7 @@ let voteObject = {
                 },
                 {
                     pointsAllocations: {
-                        points: [1,2,3]     // these are ranks, where 1 is highest
+                        points: [2,1,3]     // index is choice, value is rank (1 is highest)
                     }
                 },
                 {
