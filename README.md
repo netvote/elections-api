@@ -97,6 +97,7 @@ let job = await nv.CreateElection({
     autoActivate: false,
     continuousReveal: false,
     metadataLocation: metadata.hash,
+    requireProof: true,
     allowUpdates: true,
     netvoteKeyAuth: true,
     network: "netvote"
@@ -106,7 +107,7 @@ let finished = await nv.PollJob(job.jobId, 60000);
 
 let electionId = finished.txResult.electionId;
 ```
-### Activate Election
+### Activate / Resume Election
 ```
 await nv.ActivateElection(electionId);
 ```
@@ -114,13 +115,56 @@ await nv.ActivateElection(electionId);
 ```
 await nv.StopElection(electionId);
 ```
-### Resume Election
-```
-await nv.ActivateElection(electionId);
-```
-### Close Election
+### Close Election (Permanent)
 ```
 await nv.CloseElection(electionId);
+```
+
+## Public/Voter SDK
+
+###  Initialize Admin Client
+```
+const publicNv = netvoteApis.initVoterClient(
+    process.env.NETVOTE_API_KEY, 
+)
+```
+###  Get Anonymous Voter Auth Token
+```
+// voterToken distributed via string or QR
+let tokenReponse = await publicNv.GetJwtToken(electionId, voterToken)
+let token = tokenResponse.token;
+```
+
+### Cast Vote
+```
+let voteObject = {
+    ballotVotes: [
+        {
+            choices: [
+                {
+                    selection: 0
+                },
+                {
+                    selection: 1
+                },
+                {
+                    selection: 1
+                }
+            ]
+        }
+    ]
+}
+let job = await publicNv.CastSignedVote(electionId, token, voteObject)
+
+// poll for 60 seconds
+let res = await publicNv.PollJob(job.jobId, 60000);
+
+if(res.txStatus === "complete"){
+    // everything is good
+} else {
+    // an error occured, or vote is a duplicate
+}
+
 ```
 
 ## REST API 
