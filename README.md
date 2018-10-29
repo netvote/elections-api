@@ -73,10 +73,7 @@ let metadata = await nv.SaveToIPFS({
 			}, {
 				"itemTitle": "Blue"
 			}]
-		}]
-	}, {
-		"groupTitle": "Points Election",
-		"ballotSections": [{
+		}, {
 			"type": "points",
 			"totalPoints": 9,
 			"sectionTitle": "Tax Commissioner",
