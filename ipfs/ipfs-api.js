@@ -21,7 +21,8 @@ module.exports.save = async (event, context) => {
 
 module.exports.get = async (event, context) => {
   try {
-    let body = await ipfs.get(event.pathParameters.hash);
+    let body = await ipfs.getJson(event.pathParameters.hash);
+
     return utils.success(body)
   } catch (e) {
     console.error(e);
