@@ -9,7 +9,7 @@ provider:
   region: ${opt:region, 'us-east-1'}
   appClientId: 6d5bgvo3j82eli47c36c00sreb
   userPoolId: us-east-1_XGFVRW86R
-  adminUserPoolId: us-east-1_nPRrxrfY7
+  adminUserPoolId: us-east-1_svd7ExXfX
 
 functions:
   adminAuthorizer:
@@ -176,7 +176,7 @@ functions:
           cors: true
           authorizer:
             name: authorizer
-            arn: arn:aws:cognito-idp:us-east-1:891335278704:userpool/us-east-1_nPRrxrfY7
+            arn: arn:aws:cognito-idp:us-east-1:891335278704:userpool/${self:provider.adminUserPoolId}
 
 resources:
   Resources:
