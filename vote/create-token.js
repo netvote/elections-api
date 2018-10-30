@@ -52,7 +52,7 @@ module.exports.create = async (event, context) => {
 
         if(format === "qr"){
             let qr = await utils.qr(obj);
-            obj.qr = qr;
+            obj.qr = qr.qr;
         }
 
         return utils.success(obj)
