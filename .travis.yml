@@ -7,6 +7,7 @@ cache:
 before_script:
   - npm install -g serverless
 script: 
+  - npm install
   - sls deploy --stage dev
   - npm test
   - sls deploy --stage prod
