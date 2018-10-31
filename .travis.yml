@@ -4,11 +4,11 @@ node_js:
 cache:
   directories:
     - node_modules
+matrix:
+  fast_finish: true
 before_script:
   - npm install -g serverless
 script: 
   - npm install
   - sls deploy --stage dev
   - npm test
-  - sls deploy --stage prod
-  - npm run testprod
