@@ -1,6 +1,6 @@
 Netvote API
 ===========
-[![Build Status](https://travis-ci.org/netvote/elections-api.svg?branch=master)](https://travis-ci.org/netvote/elections-tally)
+[![Build Status](https://travis-ci.org/netvote/elections-api.svg?branch=master)](https://travis-ci.org/netvote/elections-api)
 
 **Version:** 1.0.6
 
