@@ -17,6 +17,8 @@ const publicNv = netvoteApis.initVoterClient(
     API_VERSION
 )
 
+const TX_TIMEOUT = 120000;
+
 const sha256Hash = (str) => {
     let hash = crypto.createHash("sha256")
     hash.update(str);
@@ -71,7 +73,7 @@ describe(`End to End Election`, function() {
         assert.equal(checkJob.txStatus, "pending", "should be in pending state")
 
         // give it one minute to complete
-        let finished = await nv.PollJob(job.jobId, 60000);
+        let finished = await nv.PollJob(job.jobId, TX_TIMEOUT);
 
         assert.equal(finished.txStatus, "complete", "should be in complete state")
         assert.equal(finished.txResult.address != null, true, "address should be set")
@@ -111,8 +113,8 @@ describe(`End to End Election`, function() {
         let checkJob = await nv.AdminGetJob(job.jobId);
         assert.equal(checkJob.txStatus, "pending", "should be in pending state")
 
-        // give it one minute to complete
-        let finished = await nv.PollJob(job.jobId, 60000);
+        // give it TX_TIMEOUT to complete
+        let finished = await nv.PollJob(job.jobId, TX_TIMEOUT);
 
         assert.equal(finished.txStatus, "complete", "should be in complete state")
 
@@ -157,7 +159,7 @@ describe(`End to End Election`, function() {
         assert.equal(job.jobId != null, true, "jobId should be present: "+JSON.stringify(job))
         assert.equal(job.txStatus, "pending", "status should be pending")
 
-        let res = await publicNv.PollJob(job.jobId, 60000);
+        let res = await publicNv.PollJob(job.jobId, TX_TIMEOUT);
         assert.equal(res.txResult.tx != null, true, "tx should be defined")
         assert.equal(res.txStatus, "complete", "status should be complete")
     })
@@ -185,7 +187,7 @@ describe(`End to End Election`, function() {
         assert.equal(checkJob.txStatus, "pending", "should be in pending state")
 
         // give it one minute to complete
-        let finished = await nv.PollJob(job.jobId, 60000);
+        let finished = await nv.PollJob(job.jobId, TX_TIMEOUT);
 
         assert.equal(finished.txStatus, "complete", "should be in complete state")
 
@@ -198,7 +200,7 @@ describe(`End to End Election`, function() {
         assert.equal(job.jobId != null, true, "jobId should be present: "+JSON.stringify(job))
         assert.equal(job.txStatus, "pending", "status should be pending")
 
-        let res = await publicNv.PollJob(job.jobId, 60000);
+        let res = await publicNv.PollJob(job.jobId, TX_TIMEOUT);
         assert.equal(res.txResult.results != null, true, "results should be defined")
         assert.equal(res.txStatus, "complete", "status should be complete")
     })
