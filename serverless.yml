@@ -9,7 +9,7 @@ provider:
   region: ${opt:region, 'us-east-1'}
   appClientId: 6d5bgvo3j82eli47c36c00sreb
   userPoolId: us-east-1_XGFVRW86R
-  adminUserPoolId: us-east-1_svd7ExXfX
+  adminUserPoolId: us-east-1_gjH1FmMsn
 
 functions:
   adminAuthorizer:
@@ -171,7 +171,19 @@ functions:
     role: usageReaderRole
     events:
       - http:
-          path: usage
+          path: usage/detail
+          method: get
+          cors: true
+          authorizer:
+            name: authorizer
+            arn: arn:aws:cognito-idp:us-east-1:891335278704:userpool/${self:provider.adminUserPoolId}
+
+  usageReportTime:
+    handler: billing/usage-api.timeReport
+    role: usageReaderRole
+    events:
+      - http:
+          path: usage/report/time
           method: get
           cors: true
           authorizer:
