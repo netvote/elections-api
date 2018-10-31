@@ -1,8 +1,8 @@
 Netvote API
 ===========
-Netvote API
+[![Build Status](https://travis-ci.org/netvote/elections-api.svg?branch=master)](https://travis-ci.org/netvote/elections-tally)
 
-**Version:** 1.0.1
+**Version:** 1.0.6
 
 **License:** [GPL 3.0](https://www.gnu.org/licenses/gpl-3.0.en.html)
 
