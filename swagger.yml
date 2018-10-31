@@ -205,6 +205,8 @@ paths:
       summary: "Retrieves the election information for ballot display"
       description: "Anyone may retrieve basic election information"
       operationId: "getElection"
+      security:
+      - apiKeyAuth: []
       tags:
         - Election Public Data
       parameters:
@@ -230,6 +232,8 @@ paths:
       summary: "Starts an asynchronous Tally execution"
       description: "Starts an asynchronous Tally execution"
       operationId: "getPublicResults"
+      security:
+      - apiKeyAuth: []
       tags:
         - Election Public Data
       parameters:
@@ -255,6 +259,8 @@ paths:
       summary: "Retrieves status or result of a Vote or Tally async Job"
       description: "Retrieves status or result of a Vote or Tally async Job"
       operationId: "getPublicJob"
+      security:
+      - apiKeyAuth: []
       tags:
         - Election Public Data
       parameters:
