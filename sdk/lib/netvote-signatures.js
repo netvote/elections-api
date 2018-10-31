@@ -4,9 +4,12 @@ const uuid = require('uuid/v4');
 
 let Vote;
 
+// output from export of proto
+let protoJson = {"nested":{"netvote":{"nested":{"PointsAllocation":{"fields":{"points":{"rule":"repeated","type":"uint32","id":1}}},"IndexSelection":{"fields":{"indexes":{"rule":"repeated","type":"uint32","id":1}}},"VoteChoice":{"oneofs":{"choice":{"oneof":["selection","writeIn","pointsAllocations","indexSelections","abstain"]}},"fields":{"selection":{"type":"uint32","id":1},"writeIn":{"type":"string","id":2},"pointsAllocations":{"type":"PointsAllocation","id":3},"indexSelections":{"type":"IndexSelection","id":4},"abstain":{"type":"bool","id":5}}},"BallotVote":{"fields":{"choices":{"rule":"repeated","type":"VoteChoice","id":1}}},"Vote":{"fields":{"encryptionSeed":{"type":"uint64","id":1},"ballotVotes":{"rule":"repeated","type":"BallotVote","id":2},"weight":{"type":"string","id":3},"decoy":{"type":"bool","id":4},"signatureSeed":{"type":"string","id":5}}}}}}}
+
 const initProto = async () => {
     if(!Vote){
-        let root = await protobuf.load('./vote.proto');
+        let root = protobuf.Root.fromJSON(protoJson);
         Vote = root.lookupType("netvote.Vote");
     }
 }
