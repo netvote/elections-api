@@ -14,7 +14,6 @@ const searchUsageByDate = async (start, end, user) => {
         }
     };
 
-    console.log(params);
     let res = await docClient.query(params).promise();
     return res.Items;
 }
