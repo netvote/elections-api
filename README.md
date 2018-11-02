@@ -147,7 +147,7 @@ await nv.CloseElection(electionId);
 
 This can be initialized in a browser using a stack like [Browserify](http://browserify.org/) 
 
-###  Initialize Admin Client
+###  Initialize Voter/Public Client
 ```
 const netvoteApis = require("@netvote/netvote-api-sdk")
 
