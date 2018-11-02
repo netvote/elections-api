@@ -40,7 +40,7 @@ module.exports.cast = async (event, context) => {
 
     // validate schema
     let params
-    if(el.requireProof){
+    if(el.props.requireProof){
         params = await utils.validate(event.body, voteWithProofSchema);
     } else {
         params = await utils.validate(event.body, voteSchema);
@@ -58,11 +58,13 @@ module.exports.cast = async (event, context) => {
     }
 
     // validate signature
-    try{
-        await voteUtils.validateProof(params.vote, params.proof);
-    } catch(e) {
-        console.error({electionId: electionId, message: "invalid proof", error: e.message});
-        return utils.error(400, e.message);
+    if(el.props.requireProof){
+        try{
+            await voteUtils.validateProof(params.vote, params.proof);
+        } catch(e) {
+            console.error({electionId: electionId, message: "invalid proof", error: e.message});
+            return utils.error(400, e.message);
+        }
     }
 
     let encryptedVote = await voteUtils.encryptVote(electionId, vote, voter.weight);
