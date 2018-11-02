@@ -62,6 +62,7 @@ describe(`End to End Election`, function() {
             metadataLocation: "QmZaKMumAXXLkHPBV1ZdAVsF4XCUYz1Jp5PY3oEsLrKoy6",
             allowUpdates: true,
             netvoteKeyAuth: true,
+            test: true,
             network: "netvote"
         });
 
