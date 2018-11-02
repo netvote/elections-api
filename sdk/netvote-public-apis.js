@@ -52,6 +52,13 @@ module.exports = {
     checkReady();
     return await netvoteGet(`/public/election/${electionId}`)
   },
+  CheckVoter: async(electionId, token) => {
+    checkReady();
+    let headers = {
+      "Authorization": `Bearer ${token}`
+    }
+    return await netvotePost(`/voter/election/${electionId}/voter/check`, null, headers)
+  },
   GetJwtToken: async(electionId, token) => {
     checkReady();
     let headers = {

@@ -96,6 +96,16 @@ functions:
           method: get
           private: true
           cors: true
+
+  checkVoter:
+    handler: vote/check-vote.check
+    role: voteAuthApiRole
+    events:
+      - http:
+          path: voter/election/{id}/voter/check
+          method: post
+          private: true
+          cors: true
   
   createVoterJwtToken:
     handler: vote/create-token.create
@@ -341,6 +351,10 @@ resources:
                         - ""
                         - - "arn:aws:s3:::"
                           - "Ref" : "ServerlessDeploymentBucket"
+                  - Effect: Allow
+                    Action:
+                      - dynamodb:Query
+                    Resource: "arn:aws:dynamodb:us-east-1:891335278704:table/votes"
                   - Effect: Allow
                     Action:
                       - dynamodb:GetItem

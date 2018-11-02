@@ -60,7 +60,7 @@ describe(`End to End Election`, function() {
             autoActivate: false,
             continuousReveal: false,
             metadataLocation: "QmZaKMumAXXLkHPBV1ZdAVsF4XCUYz1Jp5PY3oEsLrKoy6",
-            allowUpdates: true,
+            allowUpdates: false,
             netvoteKeyAuth: true,
             test: true,
             network: "netvote"
@@ -141,7 +141,6 @@ describe(`End to End Election`, function() {
     it('should get an auth token with generated key', async ()=> {
         let tok = await publicNv.GetJwtToken(electionId, voterKeys[0])
         assert.equal(tok.token != null, true, "should have a token")
-        tokens.push(tok.token);
     })
 
     it('should get an auth token QR with generated key', async ()=> {
@@ -155,6 +154,12 @@ describe(`End to End Election`, function() {
         tokens.push(tok.token);
     })
 
+    it('should check before vote', async ()=> {
+        let tok = await publicNv.CheckVoter(electionId, "test1")
+        assert.equal(tok.canVote, true, "should canVote")
+        assert.equal(tok.voted, false, "should not have voted")
+    })
+
     it('should cast a vote', async ()=> {
         let job = await publicNv.CastSignedVote(electionId, tokens[0], VOTES.VOTE_0_0_0)
         assert.equal(job.jobId != null, true, "jobId should be present: "+JSON.stringify(job))
@@ -163,6 +168,12 @@ describe(`End to End Election`, function() {
         let res = await publicNv.PollJob(job.jobId, TX_TIMEOUT);
         assert.equal(res.txResult.tx != null, true, "tx should be defined")
         assert.equal(res.txStatus, "complete", "status should be complete")
+    })
+
+    it('should check after vote', async ()=> {
+        let tok = await publicNv.CheckVoter(electionId, "test1")
+        assert.equal(tok.canVote, false, "should canVote")
+        assert.equal(tok.voted, true, "should have voted")
     })
 
     it('should get vote transactions', async ()=> {
