@@ -15,16 +15,24 @@ let defaultReport = () => {
 var initReport = function (s, e) { 
     let days = {}
     let months = {}
+    let dayList = []
+    let monthList = [];
     for (var d = s; d <= e; d.setDate(d.getDate() + 1)) { 
         let dateStr = dateFormat(new Date(d), "yyyy-mm-dd");
         let monthStr = dateFormat(new Date(d), "yyyy-mm")
         days[dateStr] = defaultReport()
-        months[monthStr] = defaultReport()
+        dayList.push(dateStr);
+        if(!months[monthStr]){
+            months[monthStr] = defaultReport()
+            monthList.push(monthStr);
+        }
     } 
     return {
         totals: defaultReport(),
         days: days,
-        months: months
+        months: months,
+        dayLabels: dayList,
+        monthLabels: monthList
     }; 
 };
 
@@ -81,6 +89,20 @@ module.exports.timeReport = async (event, context) => {
             report.months[monthStr][entry.mode]++;
             report.totals[entry.mode]++;
         }
+        let dayChartData = []
+        for(let i=0; i<report.dayLabels.length; i++){
+            let dayLabel = report.dayLabels[i];
+            dayChartData.push(report.days[dayLabel]["PROD"])
+        }
+        let monthChartData = []
+        for(let i=0; i<report.monthLabels.length; i++){
+            let monthLabel = report.monthLabels[i];
+            monthChartData.push(report.months[monthLabel]["PROD"])
+        }
+
+        report.dayChartData = dayChartData;
+        report.monthChartData = monthChartData;
+
         return utils.success(report);
     } catch (e) {
         console.error(e);
