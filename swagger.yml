@@ -281,6 +281,42 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Job'
+  /voter/election/{id}/voter/check:
+    post:
+      summary: "Checks to see if voter has voted"
+      description: "Checks to see if voter has voted, only for netvoteKeyAuth=true"
+      operationId: "checkVoter"
+      security:
+      - bearerAuth: []
+        apiKeyAuth: []
+      tags:
+        - Voter Authentication
+      parameters:
+       - in: path
+         name: id   
+         required: true
+         schema:
+           type: string
+           description: The election ID
+       - in: path
+         name: format   
+         required: true
+         schema:
+           type: string
+           enum:
+            - jwt
+            - qr
+      responses:
+        400:
+          description: "Invalid input"
+        404:
+          description: "Job not found"
+        200:
+          description: CanVote result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CanVote'
   /voter/election/{id}/auth/{format}:
     post:
       summary: "Exchanges voter Key for one-time use anonymized JWT token if netvoteKeyAuth is enabled for Election"
@@ -640,6 +676,13 @@ components:
           - "pending"
           - "complete"
           - "error"
+    CanVote:
+      type: object
+      properties:
+        canVote:
+          type: boolean
+        voted:
+          type: boolean
     Vote:
       type: object
       properties:
