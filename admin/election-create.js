@@ -2,7 +2,9 @@
 
 const utils = require("../lib/utils")
 const async = require("../lib/async")
+const audit = require("../audit/audit")
 const Joi = require('joi');
+const uuid = require('uuid/v4');
 
 const createElectionSchema = Joi.object().keys({
   autoActivate: Joi.boolean().default(false),
@@ -35,8 +37,10 @@ module.exports.create = async (event, context) => {
       return utils.error(400, "voteEndTime is in the past.  Value should be in epoch milliseconds.")
     }
 
+    let electionId = uuid();
     let payload = {
       network: params.network,
+      electionId: electionId,
       election: {
           type: "basic",
           allowUpdates: params.allowUpdates,
@@ -55,6 +59,7 @@ module.exports.create = async (event, context) => {
     }
 
     let jobId = await async.startJob("election-create", payload, user);
+    await audit.add(user, audit.ACTION.CREATE_ELECTION, payload);
     return utils.sendJobId(jobId)
 
   } catch (e) {

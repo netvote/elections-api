@@ -3,6 +3,7 @@
 const utils = require("../lib/utils")
 const async = require("../lib/async")
 const electionData = require("./lib/election")
+const audit = require("../audit/audit")
 const Joi = require('joi');
 
 const STATUS_VOTING = "voting"
@@ -15,12 +16,14 @@ const setStatusSchema = Joi.object().keys({
 })
 
 const stopElection = async (el, user) => {
+  await audit.add(user, audit.ACTION.STOP_ELECTION, {electionId: el.electionId});
   await electionData.setStatus(el.electionId, "stopped")
   return utils.success({txStatus:"complete", message: "election stopped"})
 }
 
 const resumeElection = async (el, user) => {
-  await electionData.setStatus(el.electionId, "voting")
+  await audit.add(user, audit.ACTION.RESUME_ELECTION, {electionId: el.electionId});
+  await electionData.setStatus(el.electionId, "voting")  
   return utils.success({txStatus:"complete", message: "election resumed"})
 }
 
@@ -28,14 +31,14 @@ const activateElection = async (el, user) => {
   let payload = {
     electionId: el.electionId
   }
+  await audit.add(user, audit.ACTION.ACTIVATE_ELECTION, {electionId: el.electionId});
   let jobId = await async.startJob("election-activate", payload, user);
   return utils.sendJobId(jobId)
 }
 
 const closeElection = async (el, user, force) => {
-  //check close after
 
-  if(new Date().getTime() < el.closeAfter) {
+  if(!force && new Date().getTime() < el.closeAfter) {
     return utils.error(409, `cannot close until ${new Date(el.closeAfter)}`)
   }
 
@@ -47,6 +50,7 @@ const closeElection = async (el, user, force) => {
   let payload = {
     electionId: el.electionId
   }
+  await audit.add(user, audit.ACTION.CLOSE_ELECTION, {electionId: el.electionId});
   let jobId = await async.startJob("election-close", payload, user);
 
   await async.startJob("election-publish-authids", payload, user);

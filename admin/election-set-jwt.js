@@ -2,6 +2,7 @@
 
 const utils = require("../lib/utils")
 const electionData = require("./lib/election")
+const audit = require("../audit/audit")
 const ursa = require('ursa')
 
 module.exports.set = async (event, context) => {
@@ -26,6 +27,8 @@ module.exports.set = async (event, context) => {
     }
 
     await electionData.savePublicJwtKey(electionId, pem);
+
+    await audit.add(user, audit.ACTION.SET_JWT_KEY, {electionId: electionId});
 
     return utils.success({txStatus: "complete"});
 
