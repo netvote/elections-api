@@ -10,7 +10,7 @@ Netvote API
 
 [Admin SDK](#admin-sdk)
 
-[Public SDK](#public-sdk)
+[Voter Client SDK](#client-sdk)
 
 [Rest API](#rest-api)
 
@@ -143,7 +143,7 @@ await nv.StopElection(electionId);
 await nv.CloseElection(electionId);
 ```
 
-## Public SDK
+## Client SDK
 
 This can be initialized in a browser using a stack like [Browserify](http://browserify.org/) 
 
