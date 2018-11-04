@@ -491,6 +491,9 @@ components:
           type: "boolean"
           default: false
           description: "If true, this election is free, only 100 votes are allowed, and may be deleted by the system."
+        metadataLocation:
+          type: "string"
+          description: "IPFS reference of metadata (e.g., QmasUSKwUoF6ftgRiVDE5TxWjwK1zQ6V9f3utWB3QWgA3C)"
         network:
           type: "string"
           description: "Network for Deployment"
