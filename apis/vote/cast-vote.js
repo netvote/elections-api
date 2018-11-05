@@ -66,6 +66,19 @@ module.exports.cast = async (event, context) => {
             return utils.error(400, e.message);
         }
     }
+    let nowTime = new Date().getTime();
+
+    if(el.props.voteStartTime){
+        if(el.props.voteStartTime > nowTime) {
+            return utils.error(409, {message: `The voting period is now yet open.  (Starts at ${el.props.voteStartTime})`})
+        }
+    }
+
+    if(el.props.voteEndTime){
+        if(el.props.voteEndTime < nowTime) {
+            return utils.error(409, {message: `The voting period is now over.  (Ended at ${el.props.voteEndTime})`})
+        }
+    }
 
     let encryptedVote = await voteUtils.encryptVote(electionId, vote, voter.weight);
     let voteId = await nvEncrypt.anonymize(electionId, voter.voterId, nvEncrypt.KEY_TYPE.VOTER);

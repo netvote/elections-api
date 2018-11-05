@@ -20,7 +20,6 @@ functions:
       appClientId: ${self:provider.appClientId}
       userPoolId: ${self:provider.userPoolId}
 
-    
   createElection:
     handler: admin/election-create.create
     role: adminApiRole
