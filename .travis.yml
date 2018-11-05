@@ -16,6 +16,8 @@ script:
   - cd apis
   - npm install
   - sls deploy --stage dev
+  - cd ../sdk
+  - npm install
   - cd ..
   - npm test
 notifications:
