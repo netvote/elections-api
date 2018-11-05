@@ -63,6 +63,7 @@ module.exports.create = async (event, context) => {
     return utils.sendJobId(jobId)
 
   } catch (e) {
+    console.error(e);
     return utils.error(400, e.message)
   }
 
