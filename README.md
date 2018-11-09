@@ -123,7 +123,7 @@ const sha256Hash = (str) => {
 
 // hash key
 let voterKey = "secretKey"
-let hashedKey = sha256Hash(k)
+let hashedKey = sha256Hash(voterKey)
 
 let res = await nv.AddVoterKeys(electionId, {hashedKeys: [hashedKey]});
 
