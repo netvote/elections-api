@@ -73,11 +73,12 @@ module.exports = {
     }
     return await netvotePost(`/voter/election/${electionId}/auth/qr`, null, headers)
   },
-  CastVote: async(electionId, token, voteObject) => {
+  CastVote: async(electionId, token, voteObject, proofReference) => {
     checkReady();
     let vote = await nvEncoder.encodeVote(voteObject, false);
     let payload = {
-      vote: vote
+      vote: vote,
+      proof: proofReference || ""
     }
     let headers = {
       "Authorization": `Bearer ${token}`
