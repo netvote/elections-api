@@ -183,7 +183,7 @@ for(let o =0; o<options.length; o++){
             if(settings.requireProof){
                 job = await publicNv.CastSignedVote(electionId, tokens[0], VOTES.VOTE_0_0_0)
             } else {
-                job = await publicNv.CastVote(electionId, tokens[0], VOTES.VOTE_0_0_0)
+                job = await publicNv.CastVote(electionId, tokens[0], VOTES.VOTE_0_0_0, "testproof")
             }
             assert.equal(job.jobId != null, true, "jobId should be present: "+JSON.stringify(job))
             assert.equal(job.txStatus, "pending", "status should be pending")
