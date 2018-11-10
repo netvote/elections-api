@@ -470,7 +470,7 @@ components:
         netvoteKeyAuth:
           type: "boolean"
           default: false
-          description: "If true, API will allow creation of Voter Keys"
+          description: "If true, API will allow the exchange of Voter Keys for Netvote generated JWT tokens"
         allowUpdates:
           type: "boolean"
           default: false
