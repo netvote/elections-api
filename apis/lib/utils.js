@@ -28,7 +28,9 @@ const getUser = (event) => {
         company: id["custom:company"],
         email: id.email,
         mainnet: hasMainnet,
-        phone: id.phone_number
+        phone: id.phone_number,
+        accountType: id["custom:accountType"],
+        maxApiKeys: id["custom:maxApiKeys"]
     }
 }
 

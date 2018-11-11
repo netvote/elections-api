@@ -23,13 +23,19 @@ const createElectionSchema = Joi.object().keys({
 module.exports.create = async (event, context) => {
 
   try {
-
+    console.log(event)
     let params = await utils.validate(event.body, createElectionSchema);
     let user = utils.getUser(event);
 
     if(params.network === "mainnet"){
       if(!user.mainnet){
-        return utils.error(403, "user does not have permission to use mainnet")
+        return utils.error(403, "User does not have permission to use mainnet")
+      }
+    }
+
+    if(!params.test) {
+      if(user.accountType === "beta") {
+        return utils.error(403, "Tenant may not create production elections.  Include test:true or request an account upgrade.")
       }
     }
 

@@ -255,6 +255,10 @@ resources:
                     Resource: "arn:aws:dynamodb:us-east-1:891335278704:table/asyncJobs"
                   - Effect: Allow
                     Action:
+                      - dynamodb:GetItem
+                    Resource: "arn:aws:dynamodb:us-east-1:891335278704:table/tenants"
+                  - Effect: Allow
+                    Action:
                       - dynamodb:UpdateItem
                       - dynamodb:GetItem
                     Resource: "arn:aws:dynamodb:us-east-1:891335278704:table/elections"
@@ -583,6 +587,10 @@ resources:
                     Action:
                       - cognito-idp:AdminInitiateAuth
                     Resource: "arn:aws:cognito-idp:us-east-1:891335278704:userpool/us-east-1_XGFVRW86R"     
+                  - Effect: Allow
+                    Action:
+                      - dynamodb:GetItem
+                    Resource: "arn:aws:dynamodb:us-east-1:891335278704:table/tenants"
                     
     ipfsWriterRole:
       Type: AWS::IAM::Role

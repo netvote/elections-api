@@ -1,6 +1,7 @@
 const AWS = require("aws-sdk")
 const https = require("https")
 const jose = require('node-jose');
+const tenants = require('../lib/tenants')
 
 const region = process.env.region;
 const userpool_id = process.env.userPoolId;
@@ -78,6 +79,9 @@ const getClaims = async (token) => {
                             flatClaims[k] = claims[k];
                         }
                     })
+                    let tenant = await tenants.getTenant(flatClaims["custom:company"]);
+                    flatClaims["custom:maxApiKeys"] = tenant.maxApiKeys;
+                    flatClaims["custom:accountType"] = tenant.accountType;
                     resolve(flatClaims);
                 });
             }

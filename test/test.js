@@ -68,7 +68,8 @@ let options = [{
     netvoteKeyAuth: true,
     test: true,
     network: "netvote"
-}]
+}
+]
 
 for(let o =0; o<options.length; o++){
     let settings = options[o];
