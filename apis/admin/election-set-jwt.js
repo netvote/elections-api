@@ -22,7 +22,7 @@ module.exports.set = async (event, context) => {
       return utils.error(404, "not found");
     }
 
-    if(el.netvoteKeyAuth){
+    if(el.authType === "key" || el.netvoteKeyAuth){
       return utils.error(409, "election is using netvote key auth, public key cannot be overridden");
     }
 

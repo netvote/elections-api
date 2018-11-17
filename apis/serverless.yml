@@ -75,6 +75,17 @@ functions:
           private: true
           authorizer: adminAuthorizer
 
+  addVoterEmails:
+    handler: admin/auth-emails.add
+    role: adminApiRole
+    events:
+      - http:
+          path: admin/election/{id}/emails
+          method: post
+          cors: true
+          private: true
+          authorizer: adminAuthorizer
+
   jobLookup:
     handler: admin/job-lookup.lookup
     role: adminApiRole

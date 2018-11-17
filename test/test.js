@@ -37,7 +37,7 @@ const assertElectionValues = async (electionId, keyVals) => {
     })
 }
 
-describe(`IPFS API`, function() {
+describe.skip(`IPFS API`, function() {
 
     it('should save and get file', async()=>{
         let res = await publicNv.SaveToIPFS({
@@ -46,6 +46,50 @@ describe(`IPFS API`, function() {
         let obj = await publicNv.GetFromIPFS(res.hash);
         assert.equal(obj.test, true, "should be same object")
     });
+
+})
+
+describe(`Upload emails to Email Election`, function() {
+    let electionId;
+
+    it('should create election', async () => {
+        let job = await nv.CreateElection({
+            autoActivate: false,
+            continuousReveal: false,
+            metadataLocation: "QmZaKMumAXXLkHPBV1ZdAVsF4XCUYz1Jp5PY3oEsLrKoy6",
+            allowUpdates: false,
+            requireProof: true,
+            authType: "email",
+            test: true,
+            network: "netvote"
+        });
+
+        assert.equal(job.jobId != null, true, "jobId should be present: "+JSON.stringify(job))
+        assert.equal(job.txStatus, "pending", "status should be pending")
+
+        // confirm initial job state
+        let checkJob = await nv.AdminGetJob(job.jobId);
+        assert.equal(checkJob.txStatus, "pending", "should be in pending state")
+
+        // give it one minute to complete
+        let finished = await nv.PollJob(job.jobId, TX_TIMEOUT);
+
+        assert.equal(finished.txStatus, "complete", "should be in complete state")
+        assert.equal(finished.txResult.address != null, true, "address should be set")
+        assert.equal(finished.txResult.electionId != null, true, "electionId should be set")
+        assert.equal(finished.txResult.tx != null, true, "tx should be set")
+
+        electionId = finished.txResult.electionId;
+        console.log(`electionId: ${electionId}`)
+        await assertElectionState(electionId, "building")
+        await assertElectionValues(electionId, {authType: "email"})
+    })
+
+    it('should upload emails', async ()=> {
+        let res = await nv.AddVoterEmails(electionId, {emailAddresses: ["steven@netvote.io"]});
+        console.log(res)
+        assert.equal(res.count, 1, "should have a count of 1")
+    })
 
 })
 
@@ -74,7 +118,7 @@ let options = [{
 for(let o =0; o<options.length; o++){
     let settings = options[o];
 
-    describe(`End to End Election requireProof=${settings.requireProof}`, function() {
+    describe.skip(`End to End Election requireProof=${settings.requireProof}`, function() {
 
         let electionId;
         let voterKeys;
@@ -101,6 +145,7 @@ for(let o =0; o<options.length; o++){
             electionId = finished.txResult.electionId;
             console.log(`electionId: ${electionId}`)
             await assertElectionState(electionId, (settings.autoActivate ? "voting" : "building"))
+            await assertElectionValues(electionId, {authType: "key"})
         })
     
         it('should generate keys', async ()=> {

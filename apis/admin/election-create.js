@@ -12,6 +12,7 @@ const createElectionSchema = Joi.object().keys({
   metadataLocation: Joi.string().required(),
   requireProof: Joi.boolean().default(true),
   netvoteKeyAuth: Joi.boolean().default(false),
+  authType: Joi.string().only("key","jwt","email").default("jwt"),
   allowUpdates: Joi.boolean().default(false),
   closeAfter: Joi.number().default(new Date().getTime()),
   voteStartTime: Joi.number().default(new Date().getTime()),
@@ -43,6 +44,9 @@ module.exports.create = async (event, context) => {
       return utils.error(400, "voteEndTime is in the past.  Value should be in epoch milliseconds.")
     }
 
+    //backwards compatibility
+    let authType = (params.netvoteKeyAuth) ? "key" : params.authType;
+
     let electionId = uuid();
     let payload = {
       network: params.network,
@@ -58,6 +62,7 @@ module.exports.create = async (event, context) => {
           autoActivate: params.autoActivate,
           voteStartTime: params.voteStartTime,
           voteEndTime: params.voteEndTime,
+          authType: authType,
           isDemo: false, 
           test: params.test,
           uid: user.id

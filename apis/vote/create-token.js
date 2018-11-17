@@ -2,7 +2,7 @@
 
 const utils = require("../lib/utils")
 const electionData = require("../lib/election")
-const auth = require("./lib/auth")
+const auth = require("../lib/auth")
 const nvEncrypt = require('../lib/encryption')
 
 
