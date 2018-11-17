@@ -9,7 +9,7 @@ provider:
   region: ${opt:region, 'us-east-1'}
   appClientId: 6d5bgvo3j82eli47c36c00sreb
   userPoolId: us-east-1_XGFVRW86R
-  adminUserPoolId: us-east-1_gjH1FmMsn
+  adminUserPoolId: us-east-1_vLfOuHEEO
 
 functions:
   adminAuthorizer:
