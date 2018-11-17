@@ -67,6 +67,7 @@ functions:
   addVoterKeys:
     handler: admin/auth-keys.add
     role: adminApiRole
+    timeout: 30
     events:
       - http:
           path: admin/election/{id}/keys
