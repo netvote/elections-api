@@ -50,45 +50,50 @@ describe.skip(`IPFS API`, function() {
 })
 
 describe(`Upload emails to Email Election`, function() {
-    let electionId;
+    let electionId = "0974d90f-646a-4f3d-8665-740ea3f62068";
+    const email = "steven@netvote.io";
 
-    it('should create election', async () => {
-        let job = await nv.CreateElection({
-            autoActivate: false,
-            continuousReveal: false,
-            metadataLocation: "QmZaKMumAXXLkHPBV1ZdAVsF4XCUYz1Jp5PY3oEsLrKoy6",
-            allowUpdates: false,
-            requireProof: true,
-            authType: "email",
-            test: true,
-            network: "netvote"
-        });
+    // it('should create election', async () => {
+    //     let job = await nv.CreateElection({
+    //         autoActivate: false,
+    //         continuousReveal: false,
+    //         metadataLocation: "QmZaKMumAXXLkHPBV1ZdAVsF4XCUYz1Jp5PY3oEsLrKoy6",
+    //         allowUpdates: false,
+    //         requireProof: true,
+    //         authType: "email",
+    //         test: true,
+    //         network: "netvote"
+    //     });
 
-        assert.equal(job.jobId != null, true, "jobId should be present: "+JSON.stringify(job))
-        assert.equal(job.txStatus, "pending", "status should be pending")
+    //     assert.equal(job.jobId != null, true, "jobId should be present: "+JSON.stringify(job))
+    //     assert.equal(job.txStatus, "pending", "status should be pending")
 
-        // confirm initial job state
-        let checkJob = await nv.AdminGetJob(job.jobId);
-        assert.equal(checkJob.txStatus, "pending", "should be in pending state")
+    //     // confirm initial job state
+    //     let checkJob = await nv.AdminGetJob(job.jobId);
+    //     assert.equal(checkJob.txStatus, "pending", "should be in pending state")
 
-        // give it one minute to complete
-        let finished = await nv.PollJob(job.jobId, TX_TIMEOUT);
+    //     // give it one minute to complete
+    //     let finished = await nv.PollJob(job.jobId, TX_TIMEOUT);
 
-        assert.equal(finished.txStatus, "complete", "should be in complete state")
-        assert.equal(finished.txResult.address != null, true, "address should be set")
-        assert.equal(finished.txResult.electionId != null, true, "electionId should be set")
-        assert.equal(finished.txResult.tx != null, true, "tx should be set")
+    //     assert.equal(finished.txStatus, "complete", "should be in complete state")
+    //     assert.equal(finished.txResult.address != null, true, "address should be set")
+    //     assert.equal(finished.txResult.electionId != null, true, "electionId should be set")
+    //     assert.equal(finished.txResult.tx != null, true, "tx should be set")
 
-        electionId = finished.txResult.electionId;
-        console.log(`electionId: ${electionId}`)
-        await assertElectionState(electionId, "building")
-        await assertElectionValues(electionId, {authType: "email"})
-    })
+    //     electionId = finished.txResult.electionId;
+    //     console.log(`electionId: ${electionId}`)
+    //     await assertElectionState(electionId, "building")
+    //     await assertElectionValues(electionId, {authType: "email"})
+    // })
 
-    it('should upload emails', async ()=> {
-        let res = await nv.AddVoterEmails(electionId, {emailAddresses: ["steven@netvote.io"]});
+    // it('should upload emails', async ()=> {
+    //     let res = await nv.AddVoterEmails(electionId, {emailAddresses: [email]});
+    //     assert.equal(res.count, 1, "should have a count of 1")
+    // })
+
+    it('should verify email', async ()=> {
+        let res = await publicNv.VerifyEmail(electionId, email);
         console.log(res)
-        assert.equal(res.count, 1, "should have a count of 1")
     })
 
 })

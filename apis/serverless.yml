@@ -10,6 +10,8 @@ provider:
   appClientId: 6d5bgvo3j82eli47c36c00sreb
   userPoolId: us-east-1_XGFVRW86R
   adminUserPoolId: us-east-1_vLfOuHEEO
+  environment:
+    stage: ${self:provider.stage}
 
 functions:
   adminAuthorizer:
@@ -106,6 +108,24 @@ functions:
           method: get
           private: true
           cors: true
+
+  verifyVoterEmail:
+    handler: email/auth-email.verifyEmail
+    role: voteAuthApiRole
+    events:
+      - http:
+          path: voter/election/{id}/email/verification
+          method: post
+          private: true
+          cors: true
+
+  confirmVoterEmail:
+    handler: email/auth-email.confirmEmail
+    role: voteAuthApiRole
+    events:
+      - http:
+          path: voter/election/{id}/email/confirmation
+          method: get
 
   checkVoter:
     handler: vote/check-vote.check
@@ -393,6 +413,16 @@ resources:
                     Action:
                       - dynamodb:PutItem
                     Resource: "arn:aws:dynamodb:us-east-1:891335278704:table/authIds"
+                  - Effect: Allow
+                    Action:
+                      - dynamodb:PutItem
+                      - dynamodb:GetItem
+                      - dynamodb:UpdateItem
+                    Resource: "arn:aws:dynamodb:us-east-1:891335278704:table/voterEmailAuthLinks"
+                  - Effect: Allow
+                    Action:
+                      - ses:SendEmail
+                    Resource: "arn:aws:ses:us-east-1:891335278704:identity/*"
 
     voteJobLookupRole:
       Type: AWS::IAM::Role
