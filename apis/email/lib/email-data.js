@@ -50,12 +50,7 @@ const verifyEmail = async (electionId, email) => {
 }
 
 // STEP 2: once a user verifies their email, this checks the link they click
-const confirmEmail = async (electionId, verificationId) => {
-    let key = new Buffer(verificationId, "base64").toString("utf-8");
-
-    // tolerant of complicated email formats that can actually have a : in it
-    let email = key.substring(0, key.lastIndexOf(":"));
-    let secret = key.substring(key.lastIndexOf(":")+1)
+const confirmEmail = async (electionId, email, secret) => {
 
     let linkKey = encryption.hmac(email, secret);
 

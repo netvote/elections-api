@@ -34,6 +34,15 @@ const getUser = (event) => {
     }
 }
 
+const redirect = (url) => {
+    return {
+        statusCode: 302, 
+        headers: {
+            'Location': url
+        }
+    }
+}
+
 const success = (obj) => {
     return {
         statusCode: 200,
@@ -89,6 +98,7 @@ module.exports = {
     getUser: getUser,
     sha256Hash: sha256Hash,
     validate: validate,
+    redirect: redirect,
     error: error,
     success: success,
     sendJobId: sendJobId,

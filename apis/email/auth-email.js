@@ -1,6 +1,7 @@
 const utils = require("../lib/utils")
 const electionData = require("../lib/election")
 const auth = require("../lib/auth")
+const encryption = require("../lib/encryption")
 const emailAuth = require('./lib/email-data')
 const Joi = require('joi');
 
@@ -15,11 +16,21 @@ module.exports.verifyEmail = async (event, context) => {
     let el = await electionData.getElection(electionId);
 
     if(el.authType !== "email"){
-        return utils.error(409, "election does not allow email authentication")
+        return utils.error(409, "This election does not allow email authentication")
     }
 
     if(!auth.authorizeKey(electionId, params.email)){
-        return utils.error(403, "email is not allowed to vote for this election")
+        return utils.error(403, "This email is not allowed to vote for this election")
+    }
+
+    // already voted and not allow updates
+    if(!el.props.allowUpdates){
+        let voterId = await encryption.anonymize(electionId, `${electionId}:${params.email}`, encryption.KEY_TYPE.JWT_ANONYMIZER)
+        let voteId = await encryption.anonymize(electionId, voterId, encryption.KEY_TYPE.VOTER)
+        let hasVoted = await electionData.hasVoted(electionId, voteId);
+        if(hasVoted){
+            return utils.error(403, "This email address has already voted");
+        }
     }
 
     await emailAuth.verifyEmail(electionId, params.email);
@@ -43,14 +54,24 @@ module.exports.confirmEmail = async (event, context) => {
     }
 
     try{
-        let confirmed = await emailAuth.confirmEmail(electionId, verificationId)
+        let key = new Buffer(verificationId, "base64").toString("utf-8");
+
+        // tolerant of complicated email formats that can actually have a : in it
+        let email = key.substring(0, key.lastIndexOf(":"));
+        let secret = key.substring(key.lastIndexOf(":")+1)
+
+        let confirmed = await emailAuth.confirmEmail(electionId, email, secret)
         if(!confirmed){
             return utils.error(403, "email is not allowed to vote for this election")
         }
 
-        return utils.success({"message": `Email confirmed`})
+        let token = await encryption.createJwt(electionId, email);
+
+        let url = `https://vote.netvote.io/election/${electionId}/ballot#token=${token}`
+        return utils.redirect(url);
 
     } catch(e) {
+        console.error(e);
         return utils.error(403, e.message);
     }
 }

@@ -37,7 +37,7 @@ const assertElectionValues = async (electionId, keyVals) => {
     })
 }
 
-describe(`IPFS API`, function () {
+describe.skip(`IPFS API`, function () {
 
     it('should save and get file', async () => {
         let res = await publicNv.SaveToIPFS({
@@ -116,7 +116,7 @@ let options = [{
 for (let o = 0; o < options.length; o++) {
     let settings = options[o];
 
-    describe(`End to End Election requireProof=${settings.requireProof}`, function () {
+    describe.skip(`End to End Election requireProof=${settings.requireProof}`, function () {
 
         let electionId;
         let voterKeys;

@@ -424,6 +424,11 @@ resources:
                     Action:
                       - ses:SendEmail
                     Resource: "arn:aws:ses:us-east-1:891335278704:identity/*"
+                  - Effect: Allow
+                    Action:
+                      - "s3:PutObject"
+                      - "s3:GetObject"
+                    Resource: "arn:aws:s3:::netvote-ipfs/*"   
 
     voteJobLookupRole:
       Type: AWS::IAM::Role
