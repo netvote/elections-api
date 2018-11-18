@@ -1,6 +1,6 @@
 const AWS = require("aws-sdk")
 const docClient = new AWS.DynamoDB.DocumentClient();
-const nvEncrypt = require('../../lib/encryption')
+const nvEncrypt = require('./encryption')
 
 const TABLE_VOTER_KEYS = "voterKeys";
 

@@ -109,6 +109,16 @@ module.exports = {
       return res;
     }
   },
+  VerifyEmail: async(electionId, emailAddress) => {
+    checkReady();
+    return await netvotePost(`/voter/election/${electionId}/email/verification`, {
+      email: emailAddress
+    })
+  },
+  ConfirmEmail: async(electionId, obj, id) => {
+    checkReady();
+    return await netvotePost(`/voter/election/${electionId}/email/confirmation?id=${id}`, obj)
+  },
   SaveToIPFS: async(obj) => {
     checkReady();
     return await netvotePost(`/ipfs`, JSON.stringify(obj))

@@ -69,6 +69,10 @@ module.exports = {
     checkReady();
     return await netvotePost(`/admin/election/${id}/keys`, obj)
   },
+  AddVoterEmails: async(id, obj) => {
+    checkReady();
+    return await netvotePost(`/admin/election/${id}/emails`, obj)
+  },
   ActivateElection: async(id) => {
     checkReady();
     return await netvotePost(`/admin/election/${id}/status`, { status: "voting"})

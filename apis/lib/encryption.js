@@ -131,5 +131,6 @@ module.exports =  {
     checkSignature: checkSignature,
     createJwt: createJwt,
     getJwtPublicKey: getJwtPublicKey,
-    encrypt: encrypt
+    encrypt: encrypt,
+    hmac: toHmac
 }
