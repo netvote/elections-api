@@ -11,7 +11,7 @@ let API_KEY;
 let ready=false;
 
 let authBasic = () => {
-  let token = new Buffer(`${ID}:${SECRET}`).toString("base64");
+  let token = Buffer.from(`${ID}:${SECRET}`, "utf8").toString("base64");
   return token;
 }
 

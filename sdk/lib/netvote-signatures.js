@@ -37,9 +37,8 @@ const signVote = async (voteBase64) => {
     key.generateKeyPair();
 
     const public = key.exportKey('public');
-    let pub = toBase64(new Buffer(public).toString("base64"));
-
-    let sig = key.sign(new Buffer(voteBase64), null, "base64")
+    let pub = toBase64(Buffer.from(public, "utf8").toString("base64"));
+    let sig = key.sign(Buffer.from(voteBase64, "utf8"), null, "base64")
     
     let obj = {
         signature: sig,
