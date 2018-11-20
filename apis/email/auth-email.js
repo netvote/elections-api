@@ -69,7 +69,7 @@ module.exports.confirmEmail = async (event, context) => {
 
         let token = await encryption.createJwt(electionId, email);
 
-        let url = `https://vote.netvote.io/election/${electionId}/ballot#token=${token}`
+        let url = `https://vote.netvote.io/#/ballot/${electionId}/${token}`
         return utils.redirect(url);
 
     } catch(e) {
