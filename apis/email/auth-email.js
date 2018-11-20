@@ -19,7 +19,9 @@ module.exports.verifyEmail = async (event, context) => {
         return utils.error(409, "This election does not allow email authentication")
     }
 
-    if(!auth.authorizeKey(electionId, params.email)){
+    let authorized = await auth.authorizeKey(electionId, params.email);
+
+    if(!authorized){
         return utils.error(403, "This email is not allowed to vote for this election")
     }
 
