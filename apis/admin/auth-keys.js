@@ -39,12 +39,16 @@ const storeKeys = async (event, params) => {
 
     let saves = []
     for (let i = 0; i < keys.length; i++) {
-        saves.push(electionData.saveVoterKey({
+        let obj = {
             electionId: electionId,
             hashedKey: keys[i],
             user: user,
             enabled: true
-        }))
+        }
+        if(el.mode === "TEST"){
+            obj.ttlTimestamp = el.ttlTimestamp;
+        }
+        saves.push(electionData.saveVoterKey(obj))
     }
 
     await Promise.all(saves);
@@ -74,12 +78,18 @@ const generateKeys = async (event, params) => {
     for (let i = 0; i < count; i++) {
         let key = uuid();
         keys.push(key);
-        saves.push(electionData.saveVoterKey({
+
+        let obj = {
             electionId: electionId,
             hashedKey: utils.sha256Hash(key),
             user: user,
             enabled: true
-        }))
+        }
+        if(el.mode === "TEST"){
+            obj.ttlTimestamp = el.ttlTimestamp;
+        }
+
+        saves.push(electionData.saveVoterKey(obj))
     }
 
     await Promise.all(saves);
