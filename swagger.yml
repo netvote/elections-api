@@ -144,6 +144,42 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/KeyResult'
+  /admin/election/{id}/emails:
+    post:
+      summary: "Add emails to election using email validation authentication"
+      description: "This will add email addresses that may vote in an election"
+      operationId: "uploadEmails"
+      security:
+      - basicAuth: []
+        apiKeyAuth: []
+      tags:
+        - Election Administration
+      requestBody:
+        description: "Election key set object"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmailUpload"
+      parameters:
+       - in: path
+         name: id   
+         required: true
+         schema:
+           type: string
+           description: The election ID
+      responses:
+        400:
+          description: "Invalid input"
+        404:
+          description: "Election not found"
+        200:
+          description: Key Result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailUploadResult'
+
   /admin/job/{id}:
     get:
       summary: "Retrieves the Async Job status (from create or set status actions)"
@@ -574,6 +610,13 @@ components:
         count:
           type: "integer"
           format: int32
+    EmailUpload:
+      type: "object"
+      properties:
+        emailAddresses:
+          type: "array"
+          items:
+            type: string
     HashedKeys:
       type: "object"
       properties:
@@ -694,6 +737,12 @@ components:
           type: string
         proof:
           type: string
+    EmailUploadResult:
+      type: "object"
+      properties:
+        count:
+          type: "integer"
+          format: int32
     KeyResult:
       type: "object"
       properties:
