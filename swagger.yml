@@ -431,13 +431,14 @@ paths:
            type: string
            description: IPFS Hash to retrieve
       responses:
-        400:
-          description: "Invalid input"
+        404:
+          description: "Not Found"
         200:
-          description: Hash Created
+          description: STring content from IPFS
           content:
             text/plain:
-              type: string
+              schema:
+                type: string
 components:
   securitySchemes:
     bearerAuth:
