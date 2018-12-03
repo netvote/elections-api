@@ -75,9 +75,12 @@ const legalTransitions = {
 module.exports.setStatus = async (event, context) => {
 
   try {
-
+    console.log(event);
     let params = await utils.validate(event.body, setStatusSchema);
     let user = utils.getUser(event);
+    if(!user){
+      return utils.error(401, "unauthorized");
+    }
     let electionId = event.pathParameters.id;
     let el = await electionData.getElection(electionId, user);
 
@@ -94,6 +97,7 @@ module.exports.setStatus = async (event, context) => {
     return await transition(el, user, params.force);
   
   } catch (e) {
+    console.error(e);
     return utils.error(400, e.message)
   }
 

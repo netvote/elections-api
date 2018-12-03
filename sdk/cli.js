@@ -3,7 +3,8 @@
 const sdk = require('./index.js')
 const program = require('commander');
 
-let client;
+let adminClient;
+let publicClient;
 
 const validateEnv = () => {
     let errors = false;
@@ -26,18 +27,19 @@ const validateEnv = () => {
 
 const initClient = async () => {
     validateEnv();
-    client = sdk.initAdminClient(
+    adminClient = sdk.initAdminClient(
         process.env.NETVOTE_API_KEY,
         process.env.NETVOTE_API_ID,
-        process.env.NETVOTE_API_SECRET,
-        "dev"
+        process.env.NETVOTE_API_SECRET
+    )
+
+    publicClient = sdk.initVoterClient(
+        process.env.NETVOTE_API_KEY
     )
 }
 
-const listElections = async (filter) => {
-    initClient();
-    let res = await client.GetElectionsList(filter);
-    console.log(JSON.stringify(res, null, 4));
+const printObj = (obj) => {
+    console.log(JSON.stringify(obj, null, 4));
 }
 
 const addToFilter = (filter, key, val) => {
@@ -47,7 +49,53 @@ const addToFilter = (filter, key, val) => {
 }
 
 program
-    .version('1.1.2')
+    .command('tally <electionId>')
+    .action(async function (electionId, cmd) {
+        let el = await publicClient.GetElection(electionId);
+        let job = await publicClient.GetResults(electionId);
+        if(!job.jobId){
+            console.log(job);
+            return;
+        }
+        let res = await publicClient.PollJob(job.jobId, 600000);
+        try{
+            printObj(res.txResult.results.ballots[el.address].results["ALL"])
+        }catch(e){
+            printObj(res);
+            process.exit(1);
+        }
+    })
+
+program
+    .command('votes <electionId>')
+    .action(async function (electionId, cmd) {
+        let res = await adminClient.GetVoteTransactions(electionId);
+        printObj(res);
+    })
+
+program
+    .command('close <electionId>')
+    .action(async function (electionId, cmd) {
+        let res = await adminClient.CloseElection(electionId);
+        printObj(res);
+    })
+
+program
+    .command('stop <electionId>')
+    .action(async function (electionId, cmd) {
+        let res = await adminClient.StopElection(electionId);
+        printObj(res);
+    })
+
+program
+    .command('activate <electionId>')
+    .action(async function (electionId, cmd) {
+        let res = await adminClient.ActivateElection(electionId);
+        printObj(res);
+    })
+
+program
+    .version('1.1.3')
     .command('list')
     .option('-s, --status [value]', 'status of election')
     .option('-m, --mode [value]', 'TEST or PROD')
@@ -59,8 +107,9 @@ program
         if(cmd.mode){
             filter = addToFilter(filter, "mode", cmd.mode.toUpperCase());
         }
-
-        await listElections(filter);
+        let res = await adminClient.GetElectionsList(filter);
+        printObj(res)
     })
 
+initClient();
 program.parse(process.argv)

@@ -20,6 +20,9 @@ const getElection = async (electionId, user) => {
         throw new Error("user is required for lookup");
     }
     let el = await dbGetElection(electionId);
+    if(!el) {
+        return null;
+    }
     if(el.company === user.company) {
         return el;
     } else {
