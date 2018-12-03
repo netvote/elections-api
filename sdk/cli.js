@@ -47,7 +47,7 @@ const addToFilter = (filter, key, val) => {
 }
 
 program
-    .version('1.1.0')
+    .version('1.1.2')
     .command('list')
     .option('-s, --status [value]', 'status of election')
     .option('-m, --mode [value]', 'TEST or PROD')
