@@ -84,6 +84,15 @@ const error = (code, errorObj) => {
       };
 }
 
+// overrides default message for error type
+const errorMessage = (errorType, message) => {
+    return error(errorType.code, {
+        code: errorType.code,
+        errorType: errorType.errorType,
+        message: message
+    })
+}
+
 const sendJobId = (jobId) => {
     return success({txStatus: "pending", jobId: jobId})
 }
@@ -100,6 +109,7 @@ module.exports = {
     validate: validate,
     redirect: redirect,
     error: error,
+    errorMessage: errorMessage,
     success: success,
     sendJobId: sendJobId,
     qr:qr

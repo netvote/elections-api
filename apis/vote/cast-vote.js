@@ -67,7 +67,7 @@ module.exports.cast = async (event, context) => {
         try{
             await voteUtils.validateProof(params.vote, params.proof);
         } catch(e) {
-            return utils.error(400, ERROR_TYPES.PROOF_VALIDATION);
+            return utils.errorMessage(ERROR_TYPES.VOTE_VALIDATION, e.message);
         }
     }
     let nowTime = new Date().getTime();
