@@ -70,12 +70,12 @@ const qr = (obj) => {
     });
 }
 
-const error = (code, message) => {
+const error = (code, errorObj) => {
+    console.error({type:"error", code: code, errorObj: errorObj});
+    let body = (typeof errorObj === "object") ? JSON.stringify(errorObj) : JSON.stringify({message: errorObj})
     return {
         statusCode: code,
-        body: JSON.stringify({
-            message: message
-        }),
+        body: body,
         headers: {
             "Access-Control-Allow-Origin" : "*", 
             "Access-Control-Allow-Credentials" : true,

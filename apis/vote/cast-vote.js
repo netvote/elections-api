@@ -1,5 +1,6 @@
 'use strict';
 
+const ERROR_TYPES = require("../lib/errors").ERROR_TYPES;
 const async = require("../lib/async")
 const utils = require("../lib/utils")
 const electionData = require("../lib/election")
@@ -27,23 +28,28 @@ module.exports.cast = async (event, context) => {
         voter = await nvEncrypt.verifyElectionJwt(token);
     } catch (e) {
         console.error(e);
-        console.info({message: "token invalid", error: e.message});
-        return utils.error(403, "token is invalid")
+        return utils.error(403, ERROR_TYPES.BAD_TOKEN);
     }
 
     // only voting state allowed
     let electionId = voter.electionId;
     let el = await electionData.getElection(electionId);
     if(el.electionStatus !== "voting") {
-        return utils.error(409, {message: `election is in ${el.electionStatus} state`})
+        return utils.error(409, ERROR_TYPES.VOTING_WINDOW)
     }
+
 
     // validate schema
     let params
-    if(el.props.requireProof){
-        params = await utils.validate(event.body, voteWithProofSchema);
-    } else {
-        params = await utils.validate(event.body, voteSchema);
+    try{
+        if(el.props.requireProof){
+            params = await utils.validate(event.body, voteWithProofSchema);
+        } else {
+            params = await utils.validate(event.body, voteSchema);
+        }
+    } catch(e){
+        console.error(e);
+        return utils.error(400, ERROR_TYPES.VOTE_VALIDATION);
     }
 
     let vote = await voteUtils.parseVote(params.vote);
@@ -53,8 +59,7 @@ module.exports.cast = async (event, context) => {
         await voteUtils.validateVote(el, vote);
     } catch(e) {
         console.error(e);
-        console.error({electionId: electionId, message: "invalid vote", error: e.message});
-        return utils.error(400, e.message);
+        return utils.error(400, ERROR_TYPES.VOTE_VALIDATION);
     }
 
     // validate signature
@@ -62,21 +67,20 @@ module.exports.cast = async (event, context) => {
         try{
             await voteUtils.validateProof(params.vote, params.proof);
         } catch(e) {
-            console.error({electionId: electionId, message: "invalid proof", error: e.message});
-            return utils.error(400, e.message);
+            return utils.error(400, ERROR_TYPES.PROOF_VALIDATION);
         }
     }
     let nowTime = new Date().getTime();
 
     if(el.props.voteStartTime){
         if(el.props.voteStartTime > nowTime) {
-            return utils.error(409, {message: `The voting period is now yet open.  (Starts at ${el.props.voteStartTime})`})
+            return utils.error(409, ERROR_TYPES.VOTING_WINDOW)
         }
     }
 
     if(el.props.voteEndTime){
         if(el.props.voteEndTime < nowTime) {
-            return utils.error(409, {message: `The voting period is now over.  (Ended at ${el.props.voteEndTime})`})
+            return utils.error(409, ERROR_TYPES.VOTING_WINDOW)
         }
     }
 

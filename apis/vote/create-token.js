@@ -1,5 +1,6 @@
 'use strict';
 
+const ERROR_TYPES = require("../lib/errors").ERROR_TYPES;
 const utils = require("../lib/utils")
 const electionData = require("../lib/election")
 const auth = require("../lib/auth")
@@ -12,32 +13,33 @@ module.exports.create = async (event, context) => {
 
         let token = nvEncrypt.extractAuthHeader(event);
         if (!token) {
-            return utils.error(401, "unauthorized");
+            return utils.error(401, ERROR_TYPES.BAD_TOKEN);
         }
 
         let format = event.pathParameters.format;
         if(format !== "jwt" && format !== "qr"){
-            return utils.error(400, "format must be jwt or qr");
+            return utils.error(400, ERROR_TYPES.INVALID_TOKEN_FORMAT);
         }
 
         let electionId = event.pathParameters.id;
         let el = await electionData.getElection(electionId);
 
         if (!el) {
-            return utils.error(404, "election not found");
+            return utils.error(404, ERROR_TYPES.NOT_FOUND);
         }
 
-        if (!el.netvoteKeyAuth) {
-            return utils.error(400, "election is not using Netvote key authentication, only signed JWTs")
+        // netvoteKeyAuth is deprecated
+        if (el.authType != "key" && !el.netvoteKeyAuth) {
+            return utils.error(400, ERROR_TYPES.INVALID_AUTH_TYPE)
         }
 
         if (el.electionStatus !== "voting") {
-            return utils.error(409, "election is not currently in 'voting' state")
+            return utils.error(409, ERROR_TYPES.VOTING_WINDOW)
         }
 
         let authorized = await auth.authorizeKey(electionId, token)
         if (!authorized) {
-            return utils.error(401, "unauthorized");
+            return utils.error(401, ERROR_TYPES.BAD_TOKEN);
         }
 
         let jwt = await nvEncrypt.createJwt(electionId, token)

@@ -6,7 +6,8 @@ const limiter = new RateLimiter(25, 'second');
 const snooze = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 const netvoteRequest = async (method, host, path, postObj, headers) => {
-    let maxretries = 2;
+    // making this not retry, likely will remove this functionality later
+    let maxretries = 1;
     for (let count = 0; count < maxretries; count++) {
         try {
             let res = await netvoteUnsafeRequest(method, host, path, postObj, headers);
