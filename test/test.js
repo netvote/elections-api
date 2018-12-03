@@ -55,10 +55,10 @@ describe(`Upload emails to Email Election`, function () {
 
     it('should create election', async () => {
         let job = await nv.CreateElection({
-            autoActivate: false,
-            continuousReveal: false,
+            autoActivate: true,
+            continuousReveal: true,
             metadataLocation: "QmZaKMumAXXLkHPBV1ZdAVsF4XCUYz1Jp5PY3oEsLrKoy6",
-            allowUpdates: false,
+            allowUpdates: true,
             requireProof: true,
             authType: "email",
             test: true,
@@ -77,16 +77,11 @@ describe(`Upload emails to Email Election`, function () {
         assert.equal(finished.txResult.tx != null, true, "tx should be set")
         electionId = finished.txResult.electionId;
         console.log(`electionId: ${electionId}`)
-        await assertElectionState(electionId, "building")
         await assertElectionValues(electionId, { authType: "email" })
     })
     it('should upload emails', async () => {
         let res = await nv.AddVoterEmails(electionId, { emailAddresses: [email] });
         assert.equal(res.count, 1, "should have a count of 1")
-    })
-    it('should verify email', async () => {
-        let res = await publicNv.VerifyEmail(electionId, email);
-        assert.equal(res != null, true, "should have non-error response")
     })
 })
 
@@ -121,6 +116,11 @@ for (let o = 0; o < options.length; o++) {
         let electionId;
         let voterKeys;
         let tokens = [];
+
+        it('should get elections', async () => {
+            let res = await nv.GetElectionsList();
+            assert.equal(res.elections != null, true, "should get a list of elections")
+        })
 
         it('should create election', async () => {
             let job = await nv.CreateElection(settings);

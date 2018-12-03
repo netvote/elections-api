@@ -3,7 +3,8 @@ const initVoterClient = (apiKey, version) => {
     const publicNv = require("./netvote-public-apis");
     publicNv.Init({
         apiKey: apiKey,
-        baseUrl: `https://elections.netvote.io/${v}`
+        baseUrl: `https://elections.netvote.io/${v}`,
+        ipfsUrl: `https://ipfs.citizendata.network/${v}`
     })
     return publicNv;
 }
@@ -15,7 +16,8 @@ const initAdminClient = (apiKey, id, secret, version) => {
         apiKey: apiKey,
         id: id,
         secret: secret,
-        baseUrl: `https://elections.netvote.io/${v}`
+        baseUrl: `https://elections.netvote.io/${v}`,
+        ipfsUrl: `https://ipfs.citizendata.network/${v}`
     })
     return nv;
 }

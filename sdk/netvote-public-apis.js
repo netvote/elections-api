@@ -4,6 +4,7 @@ const nvEncoder = require('./lib/netvote-signatures')
 
 let BASE_URL;
 let API_KEY;
+let IPFS_URL;
 let ready=false;
 
 const apiPath = (path) => {
@@ -26,6 +27,18 @@ const netvotePost = (path, postObj, headers) => {
   return nvReq.netvotePost(BASE_URL.hostname,  apiPath(path), postObj, reqHeaders);
 };
 
+const ipfsGet = async (path, headers) => {
+  let reqHeaders = await authentify(headers);
+  let apiPath = IPFS_URL.pathname == "/" ? path : `${IPFS_URL.pathname}${path}`
+  return nvReq.netvoteGet(IPFS_URL.hostname, apiPath, reqHeaders);
+};
+
+const ipfsPost = async (path, postObj, headers) => {
+  let reqHeaders = await authentify(headers);
+  let apiPath = IPFS_URL.pathname == "/" ? path : `${IPFS_URL.pathname}${path}`
+  return nvReq.post(IPFS_URL.hostname, apiPath, postObj, reqHeaders);
+};
+
 const snooze = ms => new Promise(resolve => setTimeout(resolve, ms)); 
 
 const checkReady = () =>{
@@ -44,7 +57,9 @@ module.exports = {
   Init: async(params) => {
     required("baseUrl", params.baseUrl);
     required("apiKey", params.apiKey);
+    required("ipfsUrl", params.ipfsUrl);
     BASE_URL = url.parse(params.baseUrl);
+    IPFS_URL = url.parse(params.ipfsUrl);
     API_KEY = params.apiKey;
     ready=true;
   },
@@ -102,7 +117,7 @@ module.exports = {
   },
   GetFromIPFS: async(hash) => {
     checkReady();
-    let res = await netvoteGet(`/ipfs/${hash}`)
+    let res = await ipfsGet(`/ipfs/${hash}`)
     try{
       return JSON.parse(res);
     } catch(e){

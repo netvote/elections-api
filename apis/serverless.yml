@@ -33,6 +33,17 @@ functions:
           private: true
           authorizer: adminAuthorizer
 
+  getElectionList:
+    handler: admin/election-list.get
+    role: adminApiRole
+    events:
+      - http:
+          path: admin/election
+          method: get
+          cors: true
+          private: true
+          authorizer: adminAuthorizer
+
   setElectionStatus:
     handler: admin/election-set-status.setStatus
     role: adminApiRole
@@ -306,6 +317,10 @@ resources:
                     Action:
                       - lambda:InvokeFunction
                     Resource: "arn:aws:lambda:us-east-1:891335278704:function:election-cast-vote"
+                  - Effect: Allow
+                    Action:
+                      - dynamodb:Query
+                    Resource: "arn:aws:dynamodb:${self:provider.region}:891335278704:table/elections/index/*"
 
     publicApiRole:
       Type: AWS::IAM::Role

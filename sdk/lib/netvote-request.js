@@ -16,7 +16,6 @@ const netvoteRequest = async (method, host, path, postObj, headers) => {
         } catch (e) {
             //squash, already logged
         }
-        console.log("RETRY (sleep 1s): " + path)
         await snooze(1000)
     }
     throw new Error("failed to complete request: " + method)
@@ -54,18 +53,17 @@ const netvoteUnsafeRequest = (method, host, path, postObj, headers) => {
                     body += d.toString();
                 });
                 res.on('end', () => {
+                    let resultBody = body;
                     try {
-                        let resultBody = JSON.parse(body)
-                        //console.log(resultBody);
-                        resolve(resultBody)
-                    } catch (e) {
-                        if (body && body.indexOf("500 Server Error") > -1) {
-                            console.error("500 error")
+                        resultBody = JSON.parse(body)
+                    } finally {
+                        if(res.statusCode >= 400){
+                            console.error(resultBody);
+                            reject(resultBody)
                         } else {
-                            console.error("not json: " + body)
+                            resolve(resultBody);
                         }
-                        reject(e);
-                    }
+                    } 
                 });
             });
 
@@ -78,9 +76,7 @@ const netvoteUnsafeRequest = (method, host, path, postObj, headers) => {
             req.end();
         })
 
-    }).catch((e) => {
-        console.error("error occured during request")
-    })
+    });
 }
 
 const netvoteGet = (host, path, headers) => {

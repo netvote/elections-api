@@ -7,6 +7,7 @@ AWS.config.update({ region: 'us-east-1' });
 let ID;
 let SECRET;
 let BASE_URL;
+let IPFS_URL;
 let API_KEY;
 let ready=false;
 
@@ -35,6 +36,18 @@ const netvotePost = async (path, postObj, headers) => {
   return nvReq.netvotePost(BASE_URL.hostname, apiPath, postObj, reqHeaders);
 };
 
+const ipfsGet = async (path, headers) => {
+  let reqHeaders = await authentify(headers);
+  let apiPath = IPFS_URL.pathname == "/" ? path : `${IPFS_URL.pathname}${path}`
+  return nvReq.netvoteGet(IPFS_URL.hostname, apiPath, reqHeaders);
+};
+
+const ipfsPost = async (path, postObj, headers) => {
+  let reqHeaders = await authentify(headers);
+  let apiPath = IPFS_URL.pathname == "/" ? path : `${IPFS_URL.pathname}${path}`
+  return nvReq.netvotePost(IPFS_URL.hostname, apiPath, postObj, reqHeaders);
+};
+
 const snooze = ms => new Promise(resolve => setTimeout(resolve, ms)); 
 
 const checkReady = () =>{
@@ -55,15 +68,28 @@ module.exports = {
     required("secret", params.secret);
     required("apiKey", params.apiKey);
     required("baseUrl", params.baseUrl);
+    required("ipfsUrl", params.ipfsUrl);
     ID = params.id;
     SECRET = params.secret;
     API_KEY = params.apiKey;
     BASE_URL = url.parse(params.baseUrl);
+    IPFS_URL = url.parse(params.ipfsUrl);
     ready=true;
   },
 	CreateElection: async(obj) => {
     checkReady();
     return await netvotePost("/admin/election", obj)
+  },
+  GetElectionsList: async(filter) => {
+    checkReady();
+    let queryParams = "";
+    if(filter){
+      queryParams = queryParams ? "&" : "?";
+      Object.keys(filter).forEach((key) => {
+        queryParams += `${key}=${filter[key]}`
+      })
+    }
+    return await netvoteGet(`/admin/election${queryParams}`)
   },
   AddVoterKeys: async(id, obj) => {
     checkReady();
@@ -95,12 +121,12 @@ module.exports = {
   },
   GetFromIPFS: async(hash) => {
     checkReady();
-    let res = await netvoteGet(`/ipfs/${hash}`)
+    let res = await ipfsGet(`/ipfs/${hash}`)
     return JSON.parse(res);
   },
   SaveToIPFS: async(obj) => {
     checkReady();
-    return await netvotePost(`/ipfs`, obj)
+    return await ipfsPost(`/ipfs`, obj)
   },
   GetVoteTransactions: async(id) => {
     checkReady();
