@@ -68,9 +68,14 @@ program
 
 program
     .command('votes <electionId>')
+    .option('-c, --count', 'count votes')
     .action(async function (electionId, cmd) {
         let res = await adminClient.GetVoteTransactions(electionId);
-        printObj(res);
+        if(cmd.count){
+            printObj(res.stats);
+        } else {
+            printObj(res);
+        }
     })
 
 program
