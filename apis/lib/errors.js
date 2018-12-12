@@ -33,6 +33,11 @@ module.exports.ERROR_TYPES = {
         errorType: "INVALID_TOKEN_FORMAT",
         code: 400,
         message: "Format must be either \"jwt\" or \"qr\""
+    },
+    FORBIDDEN: {
+        errorType: "FORBIDDEN",
+        code: 403,
+        message: "Action not allowed"
     }
 }
 

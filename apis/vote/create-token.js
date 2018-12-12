@@ -5,8 +5,42 @@ const utils = require("../lib/utils")
 const electionData = require("../lib/election")
 const auth = require("../lib/auth")
 const nvEncrypt = require('../lib/encryption')
+const Joi = require("joi")
 
+const adminCreateTokenSchema = Joi.object().keys({
+    voterId: Joi.string().required()
+})
 
+// a voter provides a key, and gets a JWT back
+module.exports.createAsAdmin = async (event, context) => {
+    console.log(event);
+    let user = await utils.getUser(event);
+    let electionId = event.pathParameters.id;
+    let el = await electionData.getElection(electionId);
+    let params = await utils.validate(event.body, adminCreateTokenSchema);
+
+    if (!el) {
+        return utils.error(404, ERROR_TYPES.NOT_FOUND);
+    }
+    if(el.company !== user.company){
+        return utils.error(403, ERROR_TYPES.FORBIDDEN);
+    }
+    if(el.authType !== "admin"){
+        return utils.error(409, ERROR_TYPES.INVALID_AUTH_TYPE);
+    }
+    if (el.electionStatus !== "voting") {
+        return utils.error(409, ERROR_TYPES.VOTING_WINDOW)
+    }
+
+    let jwt = await nvEncrypt.createJwt(electionId, params.voterId)
+
+    return utils.success({ 
+        electionId: electionId,
+        token: jwt,
+    })
+}
+
+// a voter provides a key, and gets a JWT back
 module.exports.create = async (event, context) => {
 
     try {

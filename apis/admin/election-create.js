@@ -12,7 +12,7 @@ const createElectionSchema = Joi.object().keys({
   metadataLocation: Joi.string().required(),
   requireProof: Joi.boolean().default(true),
   netvoteKeyAuth: Joi.boolean().default(false),
-  authType: Joi.string().only("key","jwt","email").default("jwt"),
+  authType: Joi.string().only("key","jwt","email","admin").default("jwt"),
   allowUpdates: Joi.boolean().default(false),
   closeAfter: Joi.number().default(new Date().getTime()),
   voteStartTime: Joi.number().default(new Date().getTime()),

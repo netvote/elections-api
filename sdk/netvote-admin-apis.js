@@ -1,6 +1,7 @@
 const AWS = require("aws-sdk")
 const url = require('url');
 const nvReq = require('./lib/netvote-request')
+const crypto = require("crypto");
 
 AWS.config.update({ region: 'us-east-1' });
 
@@ -62,6 +63,12 @@ const required = (name, value) => {
   }
 }
 
+const sha256Hash = (str) => {
+  let hash = crypto.createHash("sha256")
+  hash.update(str);
+  return hash.digest().toString("base64");
+}
+
 module.exports = {
   Init: async(params) => {
     required("id", params.id);
@@ -91,13 +98,31 @@ module.exports = {
     }
     return await netvoteGet(`/admin/election${queryParams}`)
   },
-  AddVoterKeys: async(id, obj) => {
+  AddVoterKeys: async(id, listOfKeys) => {
     checkReady();
-    return await netvotePost(`/admin/election/${id}/keys`, obj)
+    let hashes = []
+    for(let i=0; i<listOfKeys.length; i++){
+      hashes.push(sha256Hash(listOfKeys[i]));
+    }
+    return await netvotePost(`/admin/election/${id}/keys`, {
+      hashedKeys: hashes
+    })
   },
-  AddVoterEmails: async(id, obj) => {
+  GenerateVoterKeys: async(id, count) => {
     checkReady();
-    return await netvotePost(`/admin/election/${id}/emails`, obj)
+    return await netvotePost(`/admin/election/${id}/keys`, {
+      generate: count
+    })
+  },
+  AddVoterEmails: async(id, emailList) => {
+    checkReady();
+    return await netvotePost(`/admin/election/${id}/emails`, {
+      emailAddresses: emailList
+    })
+  },
+  CreateVoterJwt: async(id, voterId) => {
+    checkReady();
+    return await netvotePost(`/admin/election/${id}/voter/auth/jwt`, { voterId: voterId})
   },
   ActivateElection: async(id) => {
     checkReady();

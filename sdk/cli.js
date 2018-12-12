@@ -48,6 +48,34 @@ const addToFilter = (filter, key, val) => {
     return filter;
 }
 
+const processBatches = async (inputFile, electionId, processor) => {
+    return new Promise((resolve, reject) => {
+        var fs = require('fs'),
+        readline = require('readline'),
+        instream = fs.createReadStream(inputFile),
+        outstream = new (require('stream'))(),
+        rl = readline.createInterface(instream, outstream);
+
+        let batch = [];
+     
+        rl.on('line', async function (line) {
+            if(line) batch.push(line);
+            if(batch.length > 1000){
+                await processor(electionId, batch);
+                batch = [];
+            }
+        });
+        
+        rl.on('close', async function (line) {
+            if(line) batch.push(line);
+            if(batch.length > 0){
+                await processor(electionId, batch);
+            }
+            resolve();
+        });
+    })
+}
+
 program
     .command('tally <electionId>')
     .action(async function (electionId, cmd) {
@@ -93,6 +121,34 @@ program
     })
 
 program
+    .command('info <electionId>')
+    .action(async function (electionId, cmd) {
+        let res = await publicClient.GetElection(electionId);
+        printObj(res);
+    })
+
+program
+    .command('create-voter-jwt <electionId> <voterId>')
+    .action(async function (electionId, voterId, cmd) {
+        let res = await adminClient.CreateVoterJwt(electionId, voterId);
+        console.log(res.token);
+    })
+
+program
+    .command('add-keys <electionId> <file>')
+    .action(async function (electionId, file, cmd) {
+        await processBatches(file, electionId, adminClient.AddVoterKeys);
+        console.log("keys added successfully")
+    })
+
+program
+    .command('add-emails <electionId> <file>')
+    .action(async function (electionId, file, cmd) {
+        await processBatches(file, electionId, adminClient.AddVoterEmails);
+        console.log("emails added successfully")
+    })
+
+program
     .command('activate <electionId>')
     .action(async function (electionId, cmd) {
         let res = await adminClient.ActivateElection(electionId);
@@ -100,7 +156,7 @@ program
     })
 
 program
-    .version('1.1.3')
+    .version('1.2.0')
     .command('list')
     .option('-s, --status [value]', 'status of election')
     .option('-m, --mode [value]', 'TEST or PROD')

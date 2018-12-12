@@ -22,6 +22,17 @@ functions:
       appClientId: ${self:provider.appClientId}
       userPoolId: ${self:provider.userPoolId}
 
+  adminCreateVoterJwtToken:
+    handler: vote/create-token.createAsAdmin
+    role: adminApiRole
+    events:
+      - http:
+          path: admin/election/{id}/voter/auth/jwt
+          method: post
+          private: true
+          cors: true
+          authorizer: adminAuthorizer
+
   createElection:
     handler: admin/election-create.create
     role: adminApiRole
@@ -291,6 +302,14 @@ resources:
                     Action:
                       - dynamodb:Query
                     Resource: "arn:aws:dynamodb:${self:provider.region}:891335278704:table/elections/index/*"
+                  - Effect: Allow
+                    Action:
+                      - kms:Decrypt
+                    Resource: "arn:aws:kms:us-east-1:891335278704:key/994f296e-ce2c-4f2b-8cef-48d16644af09"
+                  - Effect: Allow
+                    Action:
+                      - dynamodb:GetItem
+                    Resource: "arn:aws:dynamodb:us-east-1:891335278704:table/electionKeys"
 
     publicApiRole:
       Type: AWS::IAM::Role

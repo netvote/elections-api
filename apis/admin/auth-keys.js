@@ -33,7 +33,7 @@ const storeKeys = async (event, params) => {
         return utils.error(404, "not found")
     }
 
-    if (!el.netvoteKeyAuth){
+    if (el.authType !== "key" && !el.netvoteKeyAuth){
         return utils.error(403, "election does not allow keys")
     }
 
@@ -68,7 +68,7 @@ const generateKeys = async (event, params) => {
         return utils.error(404, "not found")
     }
 
-    if (!el.netvoteKeyAuth){
+    if (el.authType !== "key" && !el.netvoteKeyAuth){
         return utils.error(403, "election does not allow keys")
     }
 
