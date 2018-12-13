@@ -140,6 +140,12 @@ module.exports = {
     checkReady();
     return await netvotePost(`/admin/election/${id}/status`, obj)
   },
+  CheckKeys: async(id, listOfKeys) => {
+    checkReady();
+    return await netvotePost(`/admin/election/${id}/key/check`, {
+      keys: listOfKeys
+    })
+  },
   AdminGetJob: async(jobId) => {
     checkReady();
     return await netvoteGet(`/admin/job/${jobId}`)

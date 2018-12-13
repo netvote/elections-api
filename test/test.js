@@ -360,6 +360,12 @@ for (let o = 0; o < options.length; o++) {
             assert.equal(tok.voted, false, "should not have voted")
         })
 
+        it('should check authIds', async () => {
+            let res = await nv.CheckKeys(electionId, ["test1", voterKeys[0]])
+            assert.equal(res.used.indexOf("test1") > -1, true)
+            assert.equal(res.used.indexOf(voterKeys[0]) > -1, true)
+        })
+
         it('should cast a vote', async () => {
             let job;
             if (settings.requireProof) {

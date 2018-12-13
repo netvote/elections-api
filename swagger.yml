@@ -74,6 +74,41 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/JobStart'
+  /admin/election/{id}/key/check:
+    post:
+      summary: "Get list of keys that have or have not voted"
+      description: "This will check the provided keys to confirm if they have or have not voted."
+      operationId: "checkAuthIdKeys"
+      security:
+      - basicAuth: []
+        apiKeyAuth: []
+      tags:
+        - Election Administration
+      parameters:
+       - in: path
+         name: id   
+         required: true
+         schema:
+           type: string
+           description: The election ID
+      requestBody:
+        description: "List of Keys"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/KeyCheckRequest"
+      responses:
+        400:
+          description: "Invalid input"
+        404:
+          description: "Election not found"
+        200:
+          description: Async Job Reference
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KeyCheckResult'
   /admin/election/{id}/jwt:
     post:
       summary: "Set public JWT Key for voter authentication"
@@ -743,6 +778,24 @@ components:
         count:
           type: "integer"
           format: int32
+    KeyCheckRequest:
+      type: "object"
+      properties:
+        keys:
+          type: "array"
+          items:
+            type: "string"
+    KeyCheckResult:
+      type: "object"
+      properties:
+        used:
+          type: "array"
+          items:
+            type: string
+        notUsed:
+          type: "array"
+          items:
+            type: "string"
     KeyResult:
       type: "object"
       properties:

@@ -22,6 +22,17 @@ functions:
       appClientId: ${self:provider.appClientId}
       userPoolId: ${self:provider.userPoolId}
 
+  adminCheckAuthIds:
+    handler: admin/auth-id-check.check
+    role: adminApiRole
+    events:
+      - http:
+          path: admin/election/{id}/key/check
+          method: post
+          private: true
+          cors: true
+          authorizer: adminAuthorizer
+
   adminCreateVoterJwtToken:
     handler: vote/create-token.createAsAdmin
     role: adminApiRole
@@ -290,6 +301,10 @@ resources:
                     Action:
                       - dynamodb:Query
                     Resource: "arn:aws:dynamodb:us-east-1:891335278704:table/votes"
+                  - Effect: Allow
+                    Action:
+                      - dynamodb:GetItem
+                    Resource: "arn:aws:dynamodb:us-east-1:891335278704:table/authIds"
                   - Effect: Allow
                     Action:
                       - lambda:InvokeFunction

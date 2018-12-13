@@ -32,7 +32,24 @@ const authorizeKey = async (electionId, key) => {
     return false;
 }
 
+const keyHasBeenUsed = async (electionId, key) => {
+    let hashedKey = nvEncrypt.sha256Hash(key);
+    let params = {
+        TableName: "authIds",
+        Key:{
+            "electionId": electionId,
+            "authId": hashedKey
+        }
+    };
+    let data = await docClient.get(params).promise();
+    if(data.Item){
+        return true
+    }
+    return false;
+}
+
 module.exports = {
     recordAuthId: recordAuthId,
-    authorizeKey: authorizeKey
+    authorizeKey: authorizeKey,
+    keyHasBeenUsed: keyHasBeenUsed
 }

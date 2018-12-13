@@ -48,6 +48,43 @@ const addToFilter = (filter, key, val) => {
     return filter;
 }
 
+
+const checkKeysInBatch = async (inputFile, electionId) => {
+    return new Promise((resolve, reject) => {
+        var fs = require('fs'),
+        readline = require('readline'),
+        instream = fs.createReadStream(inputFile),
+        outstream = new (require('stream'))(),
+        rl = readline.createInterface(instream, outstream);
+
+        let batch = [];
+        let result = {
+            used: [],
+            notUsed: []
+        }
+     
+        rl.on('line', async function (line) {
+            if(line) batch.push(line);
+            if(batch.length > 1000){
+                let res = await adminClient.CheckKeys(electionId, batch);
+                result.used = result.used.concat(res.used);
+                result.notUsed = result.notUsed.concat(res.notUsed);
+                batch = [];
+            }
+        });
+        
+        rl.on('close', async function (line) {
+            if(line) batch.push(line);
+            if(batch.length > 0){
+                let res = await adminClient.CheckKeys(electionId, batch);
+                result.used = result.used.concat(res.used);
+                result.notUsed = result.notUsed.concat(res.notUsed);
+            }
+            resolve(result);
+        });
+    })
+}
+
 const processBatches = async (inputFile, electionId, processor) => {
     return new Promise((resolve, reject) => {
         var fs = require('fs'),
@@ -135,6 +172,13 @@ program
     })
 
 program
+    .command('check-keys <electionId> <file>')
+    .action(async function (electionId, file, cmd) {
+        let res = await checkKeysInBatch(file, electionId);
+        printObj(res);
+    })
+
+program
     .command('add-keys <electionId> <file>')
     .action(async function (electionId, file, cmd) {
         await processBatches(file, electionId, adminClient.AddVoterKeys);
@@ -156,7 +200,7 @@ program
     })
 
 program
-    .version('1.2.0')
+    .version('1.2.1')
     .command('list')
     .option('-s, --status [value]', 'status of election')
     .option('-m, --mode [value]', 'TEST or PROD')
