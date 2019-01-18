@@ -67,6 +67,10 @@ module.exports = {
     checkReady();
     return await netvoteGet(`/public/election/${electionId}`)
   },
+  GetElectionStats: async(electionId) => {
+    checkReady();
+    return await netvoteGet(`/public/election/${electionId}/stats`)
+  },
   CheckVoter: async(electionId, token) => {
     checkReady();
     let headers = {

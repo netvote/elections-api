@@ -40,6 +40,15 @@ module.exports.verifyEmail = async (event, context) => {
     return utils.success({"message": `Email sent to ${params.email}`})
 }
 
+const redirectError = (errorType)=>{
+    let url = `https://vote.netvote.io/#/error/${errorType}`
+    return utils.redirect(url);
+}
+
+const handledErrors = {
+    "expired": true
+}
+
 // NO API KEY required (wide open), straight from email link
 module.exports.confirmEmail = async (event, context) => {
     console.log(event);
@@ -64,7 +73,8 @@ module.exports.confirmEmail = async (event, context) => {
 
         let confirmed = await emailAuth.confirmEmail(electionId, email, secret)
         if(!confirmed){
-            return utils.error(403, "email is not allowed to vote for this election")
+            console.log("email is not allowed to vote");
+            return redirectError("default");
         }
 
         let token = await encryption.createJwt(electionId, email);
@@ -74,6 +84,10 @@ module.exports.confirmEmail = async (event, context) => {
 
     } catch(e) {
         console.error(e);
-        return utils.error(403, e.message);
+        if(handledErrors[e.message]){
+            return redirectError(e.message)
+        } else {
+            return redirectError("default");
+        }
     }
 }

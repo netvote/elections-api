@@ -8,18 +8,22 @@ const snooze = ms => new Promise(resolve => setTimeout(resolve, ms));
 const netvoteRequest = async (method, host, path, postObj, headers) => {
     // making this not retry, likely will remove this functionality later
     let maxretries = 1;
+    let res;
     for (let count = 0; count < maxretries; count++) {
         try {
-            let res = await netvoteUnsafeRequest(method, host, path, postObj, headers);
+            res = await netvoteUnsafeRequest(method, host, path, postObj, headers);
             if (res !== undefined) {
                 return res;
             }
         } catch (e) {
-            //squash, already logged
+            res = e;
         }
         await snooze(1000)
     }
-    throw new Error("failed to complete request: " + method)
+    if(res && res.message) {
+        throw new Error(res.message);
+    } 
+    throw new Error("Failed to complete request: "+path)
 }
 
 const netvoteUnsafeRequest = (method, host, path, postObj, headers) => {

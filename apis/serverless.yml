@@ -25,6 +25,7 @@ functions:
   adminCheckAuthIds:
     handler: admin/auth-id-check.check
     role: adminApiRole
+    timeout: 30
     events:
       - http:
           path: admin/election/{id}/key/check
@@ -132,6 +133,16 @@ functions:
           cors: true
           private: true
           authorizer: adminAuthorizer
+
+  getElectionStats:
+    handler: public/get-election.stats
+    role: publicApiRole
+    events:
+      - http:
+          path: public/election/{id}/stats
+          method: get
+          private: true
+          cors: true
 
   getElection:
     handler: public/get-election.get
@@ -365,6 +376,10 @@ resources:
                         - ""
                         - - "arn:aws:s3:::"
                           - "Ref" : "ServerlessDeploymentBucket"
+                  - Effect: Allow
+                    Action:
+                      - dynamodb:Query
+                    Resource: "arn:aws:dynamodb:us-east-1:891335278704:table/votes"
                   - Effect: Allow
                     Action:
                       - dynamodb:GetItem

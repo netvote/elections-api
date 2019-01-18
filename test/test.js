@@ -187,6 +187,8 @@ describe(`End to End Election with Admin Keys`, function () {
         let votes = await nv.GetVoteTransactions(electionId)
         assert.equal(votes.stats.complete, 1, "should have 1 complete vote")
         assert.equal(votes.transactions.length, 1, "should have one transaction")
+        let stats = await publicNv.GetElectionStats(electionId)
+        assert.equal(stats.stats.complete, 1, "should have 1 complete vote")
     })
 
     it('should stop and close election', async () => {

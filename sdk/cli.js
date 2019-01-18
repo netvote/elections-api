@@ -48,6 +48,11 @@ const addToFilter = (filter, key, val) => {
     return filter;
 }
 
+const readJsonFile = (inputFile) => {
+    var fs = require('fs');
+    let obj = fs.readFileSync(inputFile, 'utf8');
+    return JSON.parse(obj);
+}
 
 const checkKeysInBatch = async (inputFile, electionId) => {
     return new Promise((resolve, reject) => {
@@ -144,6 +149,58 @@ program
     })
 
 program
+    .command('create <fileName>')
+    .option('-c, --continuous-reveal', 'post encryption key to reveal results during election')
+    .option('-u, --allow-updates', 'allow voters to vote again to update their vote')
+    .option('-n, --network [network]', 'netvote, ropsten, or mainnet')
+    .option('-a, --auth-type [type]', 'email or key')
+    .option('-s, --start-time [timestamp]', 'epoch ms of start time')
+    .option('-e, --end-time [timestamp]', 'epoch ms of end time')
+    .action(async function (fileName, cmd) {
+        if(cmd.authType && ["email","key"].indexOf(cmd.authType) == -1){
+            throw new Error("invalid auth type, must be one of: key, email")
+        }
+        let authType = cmd.authType || "key";
+
+        if(cmd.network && ["netvote","ropsten","mainnet"].indexOf(cmd.network) == -1){
+            throw new Error("invalid network, must be one of: ropsten, netvote, mainnet")
+        }
+        let network = cmd.network || "netvote";
+
+        let continuousReveal = cmd.continuousReveal ? true : false;
+        let allowUpdates = cmd.allowUpdates ? true : false;
+
+        let metadataJson = await readJsonFile(fileName);
+        let ipfsObj = await adminClient.SaveToIPFS(metadataJson)
+
+        if(!ipfsObj.hash || ipfsObj.hash === "zb2rhbE2775XANjTsRTV9sxfFMWxrGuMWYgshDn9xvjG69fZ3"){
+            throw new Error("error saving to IPFS")
+        }
+
+        let voteStartTime = cmd.startTime || 0;
+        let voteEndTime = cmd.endTime || 0;
+        
+        let res = await adminClient.CreateElection({
+            autoActivate: true,
+            continuousReveal: continuousReveal,
+            metadataLocation: ipfsObj.hash,
+            allowUpdates: allowUpdates,
+            requireProof: true,
+            authType: authType,
+            network: network,
+            voteStartTime: voteStartTime,
+            voteEndTime: voteEndTime
+        });
+
+        let finished = await adminClient.PollJob(res.jobId, 600000);
+        var cliRes = { result: finished.txResult};
+        if(cmd.authType === "email") {
+            cliRes.voterUrl = `https://vote.netvote.io/#/email/${finished.txResult.electionId}`
+        }
+        printObj(cliRes);
+    })
+
+program
     .command('close <electionId>')
     .action(async function (electionId, cmd) {
         let res = await adminClient.CloseElection(electionId);
@@ -200,7 +257,7 @@ program
     })
 
 program
-    .version('1.2.1')
+    .version('1.2.4')
     .command('list')
     .option('-s, --status [value]', 'status of election')
     .option('-m, --mode [value]', 'TEST or PROD')

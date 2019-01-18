@@ -67,15 +67,15 @@ const confirmEmail = async (electionId, email, secret) => {
 
     // doesn't exist OR new link has been generated
     if(!data || data.linkKey !== linkKey){
-        throw new Error("invalid link");
+        throw new Error("invalid");
     }
     // expired link
     if(data.expirationTime < new Date().getTime()){
-        throw new Error("link is expired");
+        throw new Error("expired");
     }
     // already clicked
     if(data.used) {
-        throw new Error("link already used")
+        throw new Error("used")
     }
 
     await markAsUsed(electionId, email, linkKey);

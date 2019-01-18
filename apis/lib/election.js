@@ -73,8 +73,34 @@ const hasVoted = async (electionId, voteId) => {
     return false;
 }
 
+const getStats = async (electionId) => {
+    const params = {
+        TableName : TABLE_VOTES,
+        KeyConditionExpression: "electionId = :eid",
+        ExpressionAttributeValues: {
+            ":eid": electionId
+        }
+    };
+
+    let data = await docClient.query(params).promise();
+
+    let statusCounters = {
+        total: 0
+    }
+    data.Items.forEach((itm)=>{
+        if(!statusCounters[itm.txStatus]){
+            statusCounters[itm.txStatus] = 0;
+        }
+        statusCounters[itm.txStatus]++;
+        statusCounters.total++;
+    })
+
+    return {stats: statusCounters};
+}
+
 module.exports = {
     getElection: dbGetElection,
     hasVoted: hasVoted,
-    getElectionsList: getElectionsList
+    getElectionsList: getElectionsList,
+    getStats: getStats
 }
