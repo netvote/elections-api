@@ -16,7 +16,7 @@ const voteWithProofSchema = Joi.object().keys({
 
 const voteSchema = Joi.object().keys({
     vote: Joi.string().base64().required(),
-    proof: Joi.string()
+    proof: Joi.string().allow('')
 })
 
 module.exports.cast = async (event, context) => {

@@ -1,5 +1,6 @@
 const AWS = require("aws-sdk")
 const docClient = new AWS.DynamoDB.DocumentClient();
+const web3 = require("web3-utils")
 
 const TABLE_ELECTIONS = "elections";
 const TABLE_VOTES = "votes";
@@ -13,6 +14,27 @@ const dbGetElection = async (electionId) => {
     };
     let data = await docClient.get(params).promise();
     return data.Item;
+}
+
+const hasVoted = async (electionId, voteId) => {
+
+    let voteIdHash = web3.sha3(voteId);
+
+    const params = {
+        TableName : TABLE_VOTES,
+        KeyConditionExpression: "electionId = :eid",
+        ExpressionAttributeValues: {
+            ":eid": electionId
+        }
+    };
+    let data = await docClient.query(params).promise();
+
+    for(let i=0; i<data.Items.length; i++){
+        if(data.Items[i].voterId == voteIdHash && data.Items[i].txStatus == "complete"){
+            return true;
+        }
+    }
+    return false;
 }
 
 const getElection = async (electionId, user) => {
@@ -116,5 +138,6 @@ module.exports = {
     setStatus: setStatus,
     saveVoterKey: saveVoterKey,
     hasPendingVotes: hasPendingVotes,
-    getTransactions: getTransactions
+    getTransactions: getTransactions,
+    hasVoted: hasVoted
 }

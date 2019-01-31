@@ -15,8 +15,19 @@ module.exports.verifyEmail = async (event, context) => {
     let params = await utils.validate(event.body, verifyEmailSchema);
     let el = await electionData.getElection(electionId);
 
+
+
     if(el.authType !== "email"){
         return utils.error(409, "This election does not allow email authentication")
+    }
+    
+    let now = new Date().getTime();
+    if(el.props.voteStartTime && el.props.voteStartTime > now) {
+        return utils.error(409, "Polls are not yet open");
+    }
+
+    if(el.props.voteEndTime && el.props.voteEndTime < now) {
+        return utils.error(409, "Polls are closed.");
     }
 
     let authorized = await auth.authorizeKey(electionId, params.email);

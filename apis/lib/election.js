@@ -65,11 +65,9 @@ const hasVoted = async (electionId, voteId) => {
     for(let i=0; i<data.Items.length; i++){
         console.log(data.Items[i])
         if(data.Items[i].voterId === voterId){
-            console.log("found")
             return true;
         }
     }
-    console.log("nope")
     return false;
 }
 
@@ -88,11 +86,14 @@ const getStats = async (electionId) => {
         total: 0
     }
     data.Items.forEach((itm)=>{
-        if(!statusCounters[itm.txStatus]){
-            statusCounters[itm.txStatus] = 0;
+        //revotes don't count
+        if(itm.voteType != "revote"){
+            if(!statusCounters[itm.txStatus]){
+                statusCounters[itm.txStatus] = 0;
+            }
+            statusCounters[itm.txStatus]++;
+            statusCounters.total++;
         }
-        statusCounters[itm.txStatus]++;
-        statusCounters.total++;
     })
 
     return {stats: statusCounters};
